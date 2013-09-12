@@ -1,7 +1,21 @@
 /**
  * Dynamically Expanding String Buffer
  * (C) 2013 Christian Gunderman
- * Part of Lexie-C Project
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program.  If not, see 
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Contact Email: gundermanc@gmail.com 
  */
 #include "sb.h"
 
@@ -11,7 +25,7 @@ SB * sb_new(int blockSize) {
   SB * sb = (SB*)malloc(sizeof(SB));
   char * block = (char*)malloc(blockSize);
   sb->list = ll_new(); // initialize linked list
-  ll_append_void(sb->list, block); // place initial, empty block
+  ll_append_pointer(sb->list, block); // place initial, empty block
   sb->blockSize = blockSize; // set size of each char array in list
   sb->blockIndex = 0; // nothing has been added yet, so next item add at i=0
   sb->size = 0;
@@ -26,7 +40,7 @@ static void  destroy_list_items(SB * sb) {
 
   // iterate through all blocks
   while(ll_iterator_has_next(&iterator)) {
-    char * block = (char*)ll_iterator_remove(&iterator).voidVal; // get object payload
+    char * block = (char*)ll_iterator_remove(&iterator).pointerVal; // get object payload
     free(block); // free the object payload
     //ll_iterator_remove(&iterator); // remove and free object
   }
@@ -46,12 +60,12 @@ void sb_append_c(SB * sb, char c) {
   // current block is full, alloc new one
   if(sb->blockIndex == sb->blockSize) {
     char * newBlock = (char*)malloc(sb->blockSize); // allocate new block
-    ll_append_void(sb->list, newBlock); // insert new block into linked list
+    ll_append_pointer(sb->list, newBlock); // insert new block into linked list
     sb->blockIndex = 0;
   }
 
   // insert char
-  array = (char*)ll_get_node(sb->list, LL_TAIL)->payload.voidVal;
+  array = (char*)ll_get_node(sb->list, LL_TAIL)->payload.pointerVal;
   array[sb->blockIndex] = c;
   sb->blockIndex++; // increment block index  
   sb->size++; // increment size
@@ -88,11 +102,11 @@ int sb_to_string(SB * sb, char * dst, int dstLen) {
 
   // iterate through all blocks
   while(ll_iterator_has_next(&iterator)) {
-    LLValue value;
+    DSValue value;
     char * block;
 
     ll_iterator_pop(&iterator, &value); // get payload of chars
-    block = (char*)value.voidVal;
+    block = (char*)value.pointerVal;
 
     // copy each char to buffer
     while(i < sb->size && i < (dstLen-1) && blockIndex < sb->blockSize) {
