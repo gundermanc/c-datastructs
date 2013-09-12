@@ -1,9 +1,24 @@
 /**
- * Build Configuration File
+ * Gunderman Data Structs
  * (C) 2013 Christian Gunderman
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program.  If not, see 
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Contact Email: gundermanc@gmail.com 
  */
-#ifndef build_config__h__
-#define build_config__h__
+#ifndef BUILD__CONFIG__H__
+#define BUILD__CONFIG__H__
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -52,4 +67,4 @@ typedef union {
 
 }DSValue;
 
-#endif // build_config__h__
+#endif // BUILD__CONFIG__H__

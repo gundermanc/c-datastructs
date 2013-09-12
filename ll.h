@@ -24,18 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "build_config.h"
 
 #define LL_TAIL -1
 
-typedef union {
-  double doubleVal;
-  int intVal;
-  void * voidVal;
-}LLValue;
-
 typedef struct tagLLNode {
   void * nextNode;
-  LLValue payload;
+  DSValue payload;
 }LLNode;
 
 typedef struct tagLL {
@@ -53,15 +48,46 @@ typedef struct tagLLIterator {
 
 LL * ll_new();
 void ll_free(LL * list);
-void ll_append(LL * list, LLValue item);
+void ll_append(LL * list, DSValue item);
 int ll_size(LL * list);
-LLNode * ll_get_node(LL * list, int index);
-void ll_iterator_get(LLIterator * iteratorObject, LL * list);
-bool ll_iterator_pop(LLIterator * iteratorObject, LLValue * value);
-bool ll_iterator_peek(LLIterator * iteratorObject, LLValue * value);
-bool ll_iterator_has_next(LLIterator * iteratorObject);
-LLValue ll_iterator_remove(LLIterator * iteratorObject);
+
+#ifdef DATASTRUCT_ENABLE_BOOL
+void ll_append_bool(LL * list, bool value);
+#endif // DATASTRUCT_ENABLE_BOOL
+
+#ifdef DATASTRUCT_ENABLE_DOUBLE
 void ll_append_double(LL * list, double value);
-void ll_append_void(LL * list, void * value);
+#endif // DATASTRUCT_ENABLE_DOUBLE
+
+#ifdef DATASTRUCT_ENABLE_LONG
+void ll_append_long(LL * list, long value);
+#endif // DATASTRUCT_ENABLE_LONG
+
+#ifdef DATASTRUCT_ENABLE_INT
 void ll_append_int(LL * list, int value);
+#endif // DATASTRUCT_ENABLE_INT
+
+#ifdef DATASTRUCT_ENABLE_SHORT
+void ll_append_short(LL * list, short value);
+#endif // DATASTRUCT_ENABLE_SHORT
+
+#ifdef DATASTRUCT_ENABLE_CHAR
+void ll_append_charl(LL * list, char value);
+#endif // DATASTRUCT_ENABLE_CHAR
+
+#ifdef DATASTRUCT_ENABLE_POINTER
+void ll_append_pointer(LL * list, void * value);
+#endif // DATASTRUCT_ENABLE_POINTER
+
+LLNode * ll_get_node(LL * list, int index);
+
+void ll_iterator_get(LLIterator * iteratorObject, LL * list);
+
+bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value);
+
+bool ll_iterator_peek(LLIterator * iteratorObject, DSValue * value);
+
+bool ll_iterator_has_next(LLIterator * iteratorObject);
+
+DSValue ll_iterator_remove(LLIterator * iteratorObject);
 #endif //LL__H__

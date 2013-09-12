@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "stack.h"
+#include "ll.h"
 
 int main() {
-  Stack * foo = stack_new(34);
+
 }

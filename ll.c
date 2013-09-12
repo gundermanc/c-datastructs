@@ -1,5 +1,5 @@
 /**
- * Generic Unioned Linked List
+ * Unioned Linked List
  * (C) 2013 Christian Gunderman
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -37,12 +37,16 @@ int ll_size(LL * list) {
   return list->size;
 }
 
-// frees linked list. List MUST be empty
+// frees linked list. List MUST be empty first
+// empty list using LLIterator and a while loop
+// and call ll_iterator_remove()
 void ll_free(LL * list) {
   free(list); 
 }
 
-void ll_append(LL * list, LLValue item) {
+// appends an item to the end of the linked list
+// this a fast constant time operation
+void ll_append(LL * list, DSValue item) {
   LLNode * newNode = (LLNode*)malloc(sizeof(LLNode));
   newNode->nextNode = 0; // last node in series
   newNode->payload = item;
@@ -58,26 +62,68 @@ void ll_append(LL * list, LLValue item) {
   list->size++;
 }
 
+#ifdef DATASTRUCT_ENABLE_BOOL
+// appends a bool value to the list
+void ll_append_bool(LL * list, bool value) {
+  DSValue dsValue;
+  dsValue.boolVal = value;
+  ll_append(list, dsValue);
+}
+#endif // DATASTRUCT_ENABLE_BOOL
+
+#ifdef DATASTRUCT_ENABLE_DOUBLE
 // appends a double value to the list
 void ll_append_double(LL * list, double value) {
-  LLValue llValue;
-  llValue.doubleVal = value;
-  ll_append(list, llValue);
+  DSValue dsValue;
+  dsValue.doubleVal = value;
+  ll_append(list, dsValue);
 }
+#endif // DATASTRUCT_ENABLE_DOUBLE
 
-// appends a generic pointer to the list
-void ll_append_void(LL * list, void * value) {
-  LLValue llValue;
-  llValue.voidVal = value;
-  ll_append(list, llValue);
+#ifdef DATASTRUCT_ENABLE_LONG
+// appends a long value to the list
+void ll_append_long(LL * list, long value) {
+  DSValue dsValue;
+  dsValue.longVal = value;
+  ll_append(list, dsValue);
 }
+#endif // DATASTRUCT_ENABLE_LONG
 
-// appends an integer to the list
+#ifdef DATASTRUCT_ENABLE_INT
+// appends a int value to the list
 void ll_append_int(LL * list, int value) {
-  LLValue llValue;
-  llValue.intVal = value;
-  ll_append(list, llValue);
+  DSValue dsValue;
+  dsValue.intVal = value;
+  ll_append(list, dsValue);
 }
+#endif // DATASTRUCT_ENABLE_INT
+
+#ifdef DATASTRUCT_ENABLE_SHORT
+// appends a short value to the list
+void ll_append_short(LL * list, short value) {
+  DSValue dsValue;
+  dsValue.shortVal = value;
+  ll_append(list, dsValue);
+}
+#endif // DATASTRUCT_ENABLE_SHORT
+
+#ifdef DATASTRUCT_ENABLE_CHAR
+// appends a char value to the list
+void ll_append_charl(LL * list, char value) {
+  DSValue dsValue;
+  dsValue.charVal = value;
+  ll_append(list, dsValue);
+}
+#endif // DATASTRUCT_ENABLE_CHAR
+
+#ifdef DATASTRUCT_ENABLE_POINTER
+// appends a pointer value to the list
+void ll_append_pointer(LL * list, void * value) {
+  DSValue dsValue;
+  dsValue.pointerVal = value;
+  ll_append(list, dsValue);
+}
+#endif // DATASTRUCT_ENABLE_POINTER
 
 // returns the node of the given index in the list
 LLNode * ll_get_node(LL * list, int index) {
@@ -106,21 +152,21 @@ void ll_iterator_get(LLIterator * iteratorObject, LL * list) {
 
 // pops current item off iterator, and switches to next one
 // returns true if success and false if not success
-bool ll_iterator_pop(LLIterator * iteratorObject, LLValue * value) {
+bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value) {
   if(iteratorObject->cursor != 0) {
-    LLValue payload = iteratorObject->cursor->payload;
+    DSValue payload = iteratorObject->cursor->payload;
     iteratorObject->previous = iteratorObject->cursor;
     iteratorObject->cursor = (LLNode*)iteratorObject->cursor->nextNode;
-    memcpy(value, &payload, sizeof(LLValue));
+    memcpy(value, &payload, sizeof(DSValue));
     return true;
   } else 
     return false; // no more items
 }
 
 // gets current item in iterator, without switching to next one
-bool ll_iterator_peek(LLIterator * iterator, LLValue * value) {
+bool ll_iterator_peek(LLIterator * iterator, DSValue * value) {
   if(iterator->cursor != 0) {
-    memcpy(value, &iterator->cursor->payload, sizeof(LLValue));
+    memcpy(value, &iterator->cursor->payload, sizeof(DSValue));
     return true;
   }
   return false;
@@ -133,8 +179,8 @@ bool ll_iterator_has_next(LLIterator * iteratorObject) {
 
 // removes the current item from the iterator
 // be sure to use proper peek/pop combo
-LLValue ll_iterator_remove(LLIterator * iterator) {
-  LLValue payload;
+DSValue ll_iterator_remove(LLIterator * iterator) {
+  DSValue payload;
   if(iterator->cursor != 0) {
     LLNode * node = iterator->cursor;
     payload = iterator->cursor->payload;
