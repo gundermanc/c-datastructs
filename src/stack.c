@@ -133,8 +133,8 @@ bool stack_peek(Stack * stack, DSValue * value) {
   if(stack->size > 0) {
     memcpy(value, &stack->stack[stack->size-1], sizeof(DSValue));
     return true;
-  } else 
-    return false;
+  }
+  return false;
 }
 
 // returns true if successful, and false if no stack values
@@ -143,6 +143,7 @@ bool stack_pop(Stack * stack, DSValue * value) {
     stack->size--;
     return true;
   }
+  return false;
 }
 
 // gets the number of items currently in the stack

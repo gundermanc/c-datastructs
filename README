@@ -1,0 +1,39 @@
+C-Datastructs Library
+(C) 2013 Christian Gunderman
+ 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Contact Email: gundermanc@gmail.com 
+
+
+INTRODUCTION:
+This package compiles to a C static library containing a few common data
+structures, including a Stack, a tail cached Linked List, a dynamically
+expanding string buffer, and a HashTable.
+
+All of these data structures can store the same common type: DSValue,
+a union defined in include/build_config.h. By commenting out preprocessor
+definitions, a developer can define how large DSValue will be, and what
+kind of primitive data types can be stored in it.
+
+BUILDING:
+This build requires GCC and GNU make. Run 'make' or 'make library' to 
+build the static library which is out put to the main directory and is
+named lib.a. For your convenience, a test_app.c file is included as well
+which can be used to test the structures and get your bearings. This can
+be build with 'make testapp'. 
+
+DOCUMENTATION:
+I am terribly lazy, so all documentation is in the form of comments in
+the C files. Most of it is pretty self explanitory.
