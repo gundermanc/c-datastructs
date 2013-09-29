@@ -9,11 +9,12 @@
 
 #include <stdlib.h>
 #include "ll.h"
+#include "build_config.h"
 
 // HashTable Item Node
 typedef struct tagHashTableNode {
   char * key;
-  void * value;
+  DSValue value;
 }HashTableNode;
 
 // HashTable Structure definition
@@ -30,9 +31,11 @@ typedef struct tagHashTableIterator {
 }HashTableIterator;
 
 HashTable * hashtable_new(int tableSize);
-void * hashtable_put(HashTable * ht, void * key, void * value);
-void hashtable_free(HashTable * ht);
-void * hashtable_get(HashTable * ht, char * key);
+
+bool hashtable_put(HashTable * ht, void * key, size_t keySize,
+		   DSValue * newValue, DSValue * oldValue);
+
+bool hashtable_get(HashTable * ht, void * key, size_t keySize, DSValue * value);
 void hashtable_iterator_get(HashTable * ht, HashTableIterator * i);
 int hashtable_iterator_has_next(HashTableIterator * i);
 void hashtable_node_free(HashTableNode * node);

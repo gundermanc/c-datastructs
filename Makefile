@@ -28,14 +28,15 @@ LIBCFLAGS = $(CFLAGS) -o $(OBJDIR)/$@
 SRCDIR = src
 
 
-all: library
+all: testapp
 
 testapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stack.o ll.o sb.o
-	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o
+library: stack.o ll.o sb.o hashtable.o
+	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
+	$(OBJDIR)/hashtable.o $(OBJDIR)/sha256.o
 
 # build the debug library
 buildfs:
@@ -52,6 +53,14 @@ ll.o: buildfs $(SRCDIR)/ll.c
 # build stringbuffer object
 sb.o: buildfs ll.o $(SRCDIR)/sb.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sb.c
+
+# build hashtable object
+hashtable.o: buildfs ll.o sha256.o $(SRCDIR)/hashtable.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/hashtable.c
+
+# build sha256 object
+sha256.o: buildfs $(SRCDIR)/sha256.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sha256.c
 
 # remove all binaries
 clean:

@@ -1,9 +1,9 @@
 /**
  * Dynamically Expanding String Buffer
  * (C) 2013 Christian Gunderman
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
+ * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,10 +12,10 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this program.  If not, see 
+ * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Contact Email: gundermanc@gmail.com 
+ * Contact Email: gundermanc@gmail.com
  */
 #include "sb.h"
 
@@ -40,7 +40,8 @@ static void  destroy_list_items(SB * sb) {
 
   // iterate through all blocks
   while(ll_iterator_has_next(&iterator)) {
-    char * block = (char*)ll_iterator_remove(&iterator).pointerVal; // get object payload
+    // get object payload
+    char * block = (char*)ll_iterator_remove(&iterator).pointerVal;
     free(block); // free the object payload
     //ll_iterator_remove(&iterator); // remove and free object
   }
@@ -67,7 +68,7 @@ void sb_append_c(SB * sb, char c) {
   // insert char
   array = (char*)ll_get_node(sb->list, LL_TAIL)->payload.pointerVal;
   array[sb->blockIndex] = c;
-  sb->blockIndex++; // increment block index  
+  sb->blockIndex++; // increment block index
   sb->size++; // increment size
 }
 

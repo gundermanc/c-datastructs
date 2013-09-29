@@ -1,7 +1,21 @@
 /**
- * Lexie Custom Hash Table Implementation
+ * Unioned HashTable
  * (C) 2013 Christian Gunderman
- * Part of Lexie-C Project
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Contact Email: gundermanc@gmail.com
  */
 
 #include "hashtable.h"
@@ -10,26 +24,25 @@
 #include <stdio.h>
 
 // hashes a key to an integer value
-static long hash_to_index(char * key) {
+static long hash_to_index(HashTable * ht, char * key, size_t keySize) {
   sha256_context ctx;
   uint8 digest[32];
-  int i, result = 0;
+  int result = 0;
 
   sha256_starts(&ctx);
-  sha256_update(&ctx, key, strlen(key));
+  sha256_update(&ctx, (uint8*)key, keySize);
   sha256_finish(&ctx, digest);
 
   //for(i = 0; i < 32; i++)
   //  result += digest[i];
 
   result = digest[0] + digest[1] + digest[2];
-  return result; //TODO: utilize better hashing mechanizm
+  return result % ht->tableSize; //TODO: utilize better hashing mechanizm
 }
 
-// instatiates a new hashtable
+// instantiates a new hashtable
 HashTable * hashtable_new(int tableSize) {
   HashTable * ht = malloc(sizeof(HashTable)); // allocate hashtable object
-  int i;
 
   ht->table = malloc(sizeof(LL*) * tableSize); // allocate array of pointers
   ht->tableSize = tableSize; // store table size
@@ -40,66 +53,92 @@ HashTable * hashtable_new(int tableSize) {
   return ht;
 }
 
-void * hashtable_put(HashTable * ht, void * key, void * value) {
-  int i = hash_to_index(key) % ht->tableSize; // calculate array index
+// checks the specified hash table for a prexisting value
+// if it exists, the value is copied and the function returns true
+// otherwise, the function returns false
+static bool find_value(LL * list, void * key, size_t keySize,
+				  DSValue * newValue, DSValue * oldValue) {
   LLIterator iterator;
-  void * oldValue = 0;
 
-  // if no linked list yet
-  if(ht->table[i] == 0)
-    ht->table[i] = ll_new(); // init linked list
-
-  ll_iterator_get(&iterator, ht->table[i]); // get iterator for table
-  // check for prexisting value
+  // check for prexisting value in linked list
+  ll_iterator_get(&iterator, list);
   while(ll_iterator_has_next(&iterator)) {
-    HashTableNode * node = ll_iterator_pop(&iterator);
-    if(node != 0) {
-      if(strcmp(node->key, key) == 0) {
-        oldValue = node->value;
-	      node->value = value;
+    DSValue unionedNode;
+
+    if(ll_iterator_pop(&iterator, &unionedNode)) {
+      HashTableNode * node = unionedNode.pointerVal;
+
+      // if we found the item we are looking for save old value and update
+      if(memcmp(node->key, key, keySize) == 0) {
+
+	if(oldValue != NULL) {
+	  memcpy(oldValue, &node->value, sizeof(DSValue));
+	}
+
+	if(newValue != NULL) {
+	  memcpy(&node->value, newValue, sizeof(DSValue));
+	}
+
+	return true;
       }
     }
   }
-
-  // if not prexisting
-  if(oldValue == 0) {
-    char * keyString = malloc(strlen(key) + 1);
-    HashTableNode *node = malloc(sizeof(HashTableNode));
-
-    strcpy(keyString, key); // copy the key string into a new string
-    node->key = keyString;
-    node->value = value;
-    ll_append(ht->table[i], node);
-  }
-  return oldValue;
+  return false;
 }
 
-void * hashtable_get(HashTable * ht, char * key) {
-  int i = hash_to_index(key) % ht->tableSize; // calculate array index
-  LLIterator iterator;
-  void * value = 0;
+// appends the specified DSValue to the given linked list
+static void append_value(LL * list, void * key, size_t keySize,
+			 DSValue * newValue) {
+  char * keyString = malloc(keySize + 1);
+  HashTableNode * node = malloc(sizeof(HashTableNode));
 
-  // if no linked list yet
-  if(ht->table[i] == 0)
-    return 0; // no linked list at index
+  memcpy(keyString, key, keySize);
+  node->key = keyString;
+  memcpy(&node->value, newValue, sizeof(DSValue));
+  ll_append_pointer(list, node);
+}
 
-  ll_iterator_get(&iterator, ht->table[i]); // get iterator for table
-  // check for prexisting value
-  while(ll_iterator_has_next(&iterator)) {
-    HashTableNode * node = ll_iterator_pop(&iterator);
-    if(node != 0) {
-      if(strcmp(node->key, key) == 0) {
-        return node->value; // return stored value
-      }
-    }
+bool hashtable_put(HashTable * ht, void * key, size_t keySize,
+		   DSValue * newValue, DSValue * oldValue) {
+  int i = hash_to_index(ht, key, keySize);
+  bool oldValueExists = false;
+
+  if(ht->table[i] == 0) {
+    // if no linked list at hashed index, make one
+    ht->table[i] = ll_new();
+  } else {
+    oldValueExists = find_value(ht->table[i], key, keySize, newValue, oldValue);
   }
 
-  return 0; // nothing here
+  // if value is not prexisting, we must create a new one
+  if(!oldValueExists) {
+    append_value(ht->table[i], key, keySize, newValue);
+  }
+
+  // returns whether or not oldValue was written
+  return oldValueExists;
+}
+
+// gets a value hashed with specified key from the hashtable. value should be a
+// pointer to a DSValue struct that will receive the stored value. function
+// returns true if the key exists in the table, and value struct is updated,
+// or false if the key and value do not exist.
+bool hashtable_get(HashTable * ht, void * key, size_t keySize, DSValue * value) {
+  int i = hash_to_index(ht, key, keySize); // calculate array index
+
+  // if there is a linked list at the hashed index
+  if(ht->table[i] != NULL) {
+
+    // try to get the value
+    return find_value(ht->table[i], key, keySize, NULL, value);
+  }
+
+  return false;
 }
 
 // gets next bucket in iterator
-// returns 0 if no more buckets, non zero if buckets remain
-static int iterator_update(HashTableIterator * i) {
+// returns false if no more buckets, true if buckets remain
+static bool iterator_update(HashTableIterator * i) {
   i->index++; // current bucket is empty, so go to next one
 
   // keep looking until a non empty array slot is found
@@ -107,11 +146,13 @@ static int iterator_update(HashTableIterator * i) {
     i->index++;
 
   // check and make sure there are buckets left
-  if(i->index >= i->table->tableSize) 
-    return 0; // no more buckets
+  if(i->index >= i->table->tableSize)
+    return false; // no more buckets
 
   // set new iterator
   ll_iterator_get(&i->currentIterator, i->table->table[i->index]);
+
+  return true;
 }
 
 // gets an iterator object for this hashtable
@@ -126,7 +167,8 @@ void hashtable_iterator_get(HashTable * ht, HashTableIterator * i) {
 int hashtable_iterator_has_next(HashTableIterator * i) {
 
   // if there are items remaining in current bucket
-  if(i->index < i->table->tableSize && ll_iterator_has_next(&i->currentIterator))
+  if(i->index < i->table->tableSize
+     && ll_iterator_has_next(&i->currentIterator))
     return 1;
   else {
     // current bucket has no more items, try next bucket
@@ -139,16 +181,20 @@ int hashtable_iterator_has_next(HashTableIterator * i) {
 // gets the next item in the hash table, or returns 0 if no items
 // remain
 HashTableNode * hashtable_iterator_next(HashTableIterator * i) {
-  if(hashtable_iterator_has_next(i)) 
-    return ll_iterator_pop(&i->currentIterator);
-  return 0;
+  if(hashtable_iterator_has_next(i)) {
+    DSValue unionedValue;
+    if(ll_iterator_pop(&i->currentIterator, &unionedValue)) {
+      return unionedValue.pointerVal;
+    }
+  }
+  return NULL;
 }
 
 // removes the next item in the hash table, or returns 0 if no items
 // remain
 HashTableNode * hashtable_iterator_remove(HashTableIterator * i) {
-  if(hashtable_iterator_has_next(i)) 
-    return ll_iterator_remove(&i->currentIterator);
+  if(hashtable_iterator_has_next(i))
+    return ll_iterator_remove(&i->currentIterator).pointerVal;
   return 0;
 }
 
@@ -161,10 +207,13 @@ void hashtable_node_free(HashTableNode * node) {
 // frees the specified HashTable Object
 void hashtable_free(HashTable * ht) {
   int i;
+
   // free linked lists
-  for(i = 0; i < ht->tableSize; i++)
-    if(ht->table[i] != 0)
+  for(i = 0; i < ht->tableSize; i++) {
+    if(ht->table[i] != NULL) {
       ll_free(ht->table[i]);
+    }
+  }
 
   free(ht->table);
   free(ht);

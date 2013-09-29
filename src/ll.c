@@ -109,7 +109,7 @@ void ll_append_short(LL * list, short value) {
 
 #ifdef DATASTRUCT_ENABLE_CHAR
 // appends a char value to the list
-void ll_append_charl(LL * list, char value) {
+void ll_append_char(LL * list, char value) {
   DSValue dsValue;
   dsValue.charVal = value;
   ll_append(list, dsValue);
