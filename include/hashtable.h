@@ -13,14 +13,15 @@
 
 // HashTable Item Node
 typedef struct tagHashTableNode {
-  char * key;
+  void * key;
+  size_t keySize;
   void * next;
   DSValue value;
 }HashTableNode;
 
 // HashTable Structure definition
 typedef struct tagHashTable {
-  LL ** table;
+  HashTableNode ** table;
   int tableSize;
   int blockSize;
   int numItems;
