@@ -14,6 +14,7 @@
 // HashTable Item Node
 typedef struct tagHashTableNode {
   char * key;
+  void * next;
   DSValue value;
 }HashTableNode;
 
