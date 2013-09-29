@@ -32,11 +32,13 @@ int main() {
   DSValue newValue;
   DSValue storVal;
 
+  storVal.intVal = 0;
+
   newValue.intVal = 5;
-  hashtable_put(ht, "Hellp", 5, &newValue, NULL);
+  hashtable_put(ht, "Hello", 5, &newValue, NULL);
   newValue.intVal = 23;
   hashtable_put(ht, "Hello", 5, &newValue, NULL);
-  hashtable_get(ht, "Hellp", 5, &storVal);
-  printf("%i", storVal.intVal);
+  hashtable_get(ht, "Hello", 5, &storVal);
+  printf("%i", hashtable_size(ht));
   return 0;
 }

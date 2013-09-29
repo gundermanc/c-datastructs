@@ -157,10 +157,13 @@ bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value) {
     DSValue payload = iteratorObject->cursor->payload;
     iteratorObject->previous = iteratorObject->cursor;
     iteratorObject->cursor = (LLNode*)iteratorObject->cursor->nextNode;
-    memcpy(value, &payload, sizeof(DSValue));
+    if(value != NULL) {
+      memcpy(value, &payload, sizeof(DSValue));
+    }
     return true;
-  } else 
+  } else {
     return false; // no more items
+  }
 }
 
 // gets current item in iterator, without switching to next one
