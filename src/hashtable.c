@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 // hashes a key to an integer value
+// if you have a problem with the hash function I use, feel free to change it
 static long hash_to_index(HashTable * ht, char * key, size_t keySize) {
   sha256_context ctx;
   uint8 digest[32];
@@ -38,6 +39,12 @@ static long hash_to_index(HashTable * ht, char * key, size_t keySize) {
 
   result = digest[0] + digest[1] + digest[2];
   return result % ht->tableSize; //TODO: utilize better hashing mechanizm
+}
+
+// frees the memory associated with the given node
+static void node_free(HashTableNode * node) {
+  free(node->key);
+  free(node);
 }
 
 // gets the last item in the HashTable linked list
@@ -77,8 +84,6 @@ static void rehash_table(HashTable * ht, int newSize) {
   HashTableNode ** oldTable = ht->table;
   int oldSize = ht->tableSize;
 
-  printf("REHASH!!\n\n");
-
   // reset table
   ht->tableSize = newSize;
   ht->table = malloc(sizeof(HashTableNode*) * newSize);
@@ -105,23 +110,18 @@ static void check_size(HashTable * ht) {
 }
 
 // instantiates a new hashtable
-HashTable * hashtable_new(int tableSize) {
+HashTable * hashtable_new(int tableSize, int blockSize) {
   HashTable * ht = malloc(sizeof(HashTable));
 
   // alloc array of pointers
   ht->table = malloc(sizeof(HashTableNode*) * tableSize);
   ht->tableSize = tableSize;
-  ht->blockSize = tableSize;
+  ht->blockSize = blockSize;
 
   // zero memory
   memset(ht->table, 0, sizeof(HashTableNode*) * ht->tableSize);
 
   return ht;
-}
-
-static void node_free(HashTableNode * node) {
-  free(node->key);
-  free(node);
 }
 
 // checks the specified linked list for a prexisting value
@@ -182,33 +182,14 @@ static HashTableNode * node_new(void * key, size_t keySize, DSValue * value,
   return node;
 }
 
-/*
-// appends the specified DSValue to the given linked list.
-static void append_value(LL * list, void * key, size_t keySize,
-			 DSValue * newValue) {
-  char * keyString = malloc(keySize + 1);
-  HashTableNode * node = malloc(sizeof(HashTableNode));
-
-  memcpy(keyString, key, keySize);
-  node->key = keyString;
-  memcpy(&node->value, newValue, sizeof(DSValue));
-  ll_append_pointer(list, node);
-  }*/
-
-// appends the specified DSValue to the given linked list.
-
-
 //
 bool hashtable_put(HashTable * ht, void * key, size_t keySize,
 		   DSValue * newValue, DSValue * oldValue) {
   int i = hash_to_index(ht, key, keySize);
   bool oldValueExists = false;
 
-  printf("PUT %i;", i);
-
   if(ht->table[i] != NULL) {
-    oldValueExists = find_value(ht, i, key, keySize, newValue, oldValue,
-				true);
+    oldValueExists = find_value(ht, i, key, keySize, newValue, oldValue, true);
   }
 
   if(!oldValueExists) {
@@ -278,84 +259,128 @@ bool hashtable_get(HashTable * ht, void * key, size_t keySize, DSValue * value) 
     return find_value(ht, i, key, keySize, NULL, value, false);
   }
 
-  printf("EMPTY at key: %s\n\n", key);
+
   return false;
 }
-/*
-// gets next bucket in iterator
+
+// moves iterator control to the next bucket containing items
 // returns false if no more buckets, true if buckets remain
 static bool iterator_update(HashTableIterator * i) {
-  i->index++; // current bucket is empty, so go to next one
 
-  // keep looking until a non empty array slot is found
-  while(i->index < i->table->tableSize && i->table->table[i->index] == NULL)
-    i->index++;
+  // advance to next bucket
+  i->index++;
 
-  // check and make sure there are buckets left
-  if(i->index >= i->table->tableSize)
-    return false; // no more buckets
+  // advance iterator until a list is found
+  for(;i->instance->table[i->index] == NULL; i->index++) {
 
-  // set new iterator
-  ll_iterator_get(&i->currentIterator, i->table->table[i->index]);
+    // if there are no buckets in the list that was found, return error
+    if(i->index == i->instance->tableSize) {
+      return false; // no more buckets
+    }
+  }
+
+  // set current bucket to first bucket in list
+  i->prevNode = NULL;
+  i->currentNode = i->instance->table[i->index];
 
   return true;
-  } */
+}
 
-/*
 // gets an iterator object for this hashtable
 void hashtable_iterator_get(HashTable * ht, HashTableIterator * i) {
-  i->table = ht; // store table in iterator
+  // store table in iterator
+  i->instance = ht;
+
+  // I really don't like this...but we're starting looking at bucket 0
+  // but iterator_update increments index each time its called...
   i->index = -1;  // start looking at bucket 0
 
+  // "advance" iterator to first bucket: 0
   iterator_update(i);
 }
-*/
 
-/*
-// checks to see if any items remain
+
+// checks to see if any uniterated items remain in the hash table,
+// advancing the iterator to the next list with item, if neccessary
+// returns true if items remain and false if none remain
 bool hashtable_iterator_has_next(HashTableIterator * i) {
+  bool hasNext = false;
 
   // if there are items remaining in current bucket
-  if(i->index < i->table->tableSize
-     && ll_iterator_has_next(&i->currentIterator))
-    return true;
-  else {
+  if(i->index < i->instance->tableSize
+     && i->currentNode != NULL) {
+    hasNext = true;
+  } else {
+
     // current bucket has no more items, try next bucket
-    if(iterator_update(i) && ll_iterator_has_next(&i->currentIterator))
-      return true;
+    if(iterator_update(i) && i->currentNode != NULL) {
+      hasNext = true;
+    }
   }
-  return false;
+
+  return hasNext;
 }
 
+/*
 // gets the next item in the hash table, or returns NULL if no items
 // remain
 HashTableNode * hashtable_iterator_next(HashTableIterator * i) {
-  if(hashtable_iterator_has_next(i)) {
-    DSValue unionedValue;
-    if(ll_iterator_pop(&i->currentIterator, &unionedValue)) {
-      return unionedValue.pointerVal;
-    }
-  }
-  return NULL;
-}
 
-// removes the next item in the hash table, or returns NULL if no items
-// remain
-HashTableNode * hashtable_iterator_remove(HashTableIterator * i) {
-  if(hashtable_iterator_has_next(i))
-    return ll_iterator_remove(&i->currentIterator).pointerVal;
+  // checks to see if a value exists
+  // this call also advances the iterator if neccessary
+  if(hashtable_iterator_has_next(i)) {
+
+    // returns the next value
+    DSValue unionedValue = i->currentNode->value;
+    return unionedValue.pointerVal;
+  }
+
   return NULL;
 }
 */
+
+// attempts to remove the next item in the hashtable
+// if item exists, it is removed and function returns true
+// if keyBuffer != NULL, keyBuffer will receive up to keyBufferLen
+// characters of the current key/value pair's key, and if value
+// is not null, it will receive the DSValue union of the value.
+bool hashtable_iterator_remove(HashTableIterator * i, char * keyBuffer,
+			       size_t keyBufferLen, DSValue * value, bool remove) {
+
+  // checks to see if a value exists
+  // this call also advances the iterator if neccessary
+  if(hashtable_iterator_has_next(i)) {
+    HashTableNode * currentNode = i->currentNode;
+
+    // copy out the key buffer
+    if(keyBuffer != NULL) {
+      strncpy(keyBuffer, currentNode->key, keyBufferLen);
+    }
+
+    // copy out the value
+    if(value != NULL) {
+      memcpy(value, &currentNode->value, sizeof(DSValue));
+    }
+
+    i->currentNode = currentNode->next;
+
+    // relink the list to skip current node and free
+    if(remove) {
+      if(i->prevNode != NULL) {
+	i->prevNode->next = currentNode->next;
+      }
+      node_free(currentNode);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 // gets the number of items in the hashtable
 int hashtable_size(HashTable * ht) {
   return ht->numItems;
-}
-
-// frees the memory associated with the given node
-void hashtable_node_free(HashTableNode * node) {
-  free(node->key);
-  free(node);
 }
 
 // frees the specified HashTable Object

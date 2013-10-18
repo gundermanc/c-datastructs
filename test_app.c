@@ -28,25 +28,36 @@
 #include "hashtable.h"
 
 int main() {
-  HashTable * ht = hashtable_new(2);
-  DSValue newValue;
-  DSValue storVal;
-  DSValue otherVal;
+  HashTable * ht = hashtable_new(2, 10);
+  HashTableIterator i;
+  DSValue val;
   bool f;
 
-  storVal.intVal = 0;
-  otherVal.intVal = 12;
-  newValue.intVal = 5;
+  val.intVal = 1;
+  hashtable_put(ht, "A", 5, &val, NULL);
 
-  hashtable_put(ht, "Hello", 5, &otherVal, NULL);
-  hashtable_put(ht, "Hell1", 5, &otherVal, NULL);
-  hashtable_put(ht, "Hell2", 5, &otherVal, NULL);
-  hashtable_put(ht, "Hell3", 5, &otherVal, NULL);
-  hashtable_put(ht, "Hello", 5, &newValue, NULL);
-  newValue.intVal = 23;
-  //hashtable_put(ht, "Hello", 5, &newValue, NULL);
-  f = hashtable_get(ht, "Hell3", 5, &storVal);
-  printf("Stored? : %i", f);
-  printf("Stored: %i", storVal.intVal);
+  val.intVal = 2;
+  hashtable_put(ht, "Ho", 5, &val, NULL);
+
+  val.intVal = 3;
+  hashtable_put(ht, "bad", 5, &val, NULL);
+
+  val.intVal = 4;
+  hashtable_put(ht, "foobar", 6, &val, NULL);
+
+  val.intVal = 5;
+  hashtable_put(ht, "random", 6, &val, NULL);
+
+  val.intVal = 6;
+  hashtable_put(ht, "sdfsf", 5, &val, NULL);
+
+  hashtable_iterator_get(ht, &i);
+
+  while(hashtable_iterator_has_next(&i)) {
+    char key[99];
+    DSValue value;
+    hashtable_iterator_remove(&i, key, 99, &value, true);
+    printf("%s : %i", key, value.intVal);
+  }
   return 0;
 }

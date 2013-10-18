@@ -8,14 +8,14 @@
 #define HASHTABLE__H__
 
 #include <stdlib.h>
-#include "ll.h"
+#include <string.h>
 #include "build_config.h"
 
 // HashTable Item Node
 typedef struct tagHashTableNode {
   void * key;
   size_t keySize;
-  void * next;
+  void * next;     /* HashTableNode* */
   DSValue value;
 }HashTableNode;
 
@@ -29,12 +29,13 @@ typedef struct tagHashTable {
 
 // HashTable Iterator structure defintion
 typedef struct tagHashTableIterator {
-  HashTable * table;
+  HashTable * instance;
   int index;
-  LLIterator currentIterator;
+  HashTableNode * prevNode;
+  HashTableNode * currentNode;
 }HashTableIterator;
 
-HashTable * hashtable_new(int tableSize);
+HashTable * hashtable_new(int tableSize, int blockSize);
 
 bool hashtable_put(HashTable * ht, void * key, size_t keySize,
 		   DSValue * newValue, DSValue * oldValue);
@@ -47,7 +48,8 @@ bool hashtable_iterator_has_next(HashTableIterator * i);
 
 void hashtable_node_free(HashTableNode * node);
 
-HashTableNode * hashtable_iterator_remove(HashTableIterator * i);
+bool hashtable_iterator_remove(HashTableIterator * i, char * keyBuffer,
+			       size_t keyBufferLen, DSValue * value, bool remove);
 
 HashTableNode * hashtable_iterator_next(HashTableIterator * i);
 
