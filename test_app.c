@@ -28,22 +28,25 @@
 #include "hashtable.h"
 
 int main() {
-  HashTable * ht = hashtable_new(1);
+  HashTable * ht = hashtable_new(2);
   DSValue newValue;
   DSValue storVal;
+  DSValue otherVal;
   bool f;
 
   storVal.intVal = 0;
-
+  otherVal.intVal = 12;
   newValue.intVal = 5;
-  hashtable_put(ht, "Hello", 5, &newValue, NULL);
-  hashtable_put(ht, "Hell1", 5, &newValue, NULL);
-  hashtable_put(ht, "Hell2", 5, &newValue, NULL);
-  hashtable_put(ht, "Hell3", 5, &newValue, NULL);
+
+  hashtable_put(ht, "Hello", 5, &otherVal, NULL);
+  hashtable_put(ht, "Hell1", 5, &otherVal, NULL);
+  hashtable_put(ht, "Hell2", 5, &otherVal, NULL);
+  hashtable_put(ht, "Hell3", 5, &otherVal, NULL);
   hashtable_put(ht, "Hello", 5, &newValue, NULL);
   newValue.intVal = 23;
   //hashtable_put(ht, "Hello", 5, &newValue, NULL);
-  f = hashtable_get(ht, "Hello", 5, &storVal);
-  printf("Table SIZE: %i", ht->tableSize);
+  f = hashtable_get(ht, "Hell3", 5, &storVal);
+  printf("Stored? : %i", f);
+  printf("Stored: %i", storVal.intVal);
   return 0;
 }

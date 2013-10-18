@@ -62,7 +62,7 @@ hashtable.o: buildfs ll.o sha256.o $(SRCDIR)/hashtable.c
 sha256.o: buildfs $(SRCDIR)/sha256.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sha256.c
 
-# remove all binaries
+# remove all binaries and annoying Emacs Backups
 clean:
-	$(RM) lib.a testapp $(SRCDIR)/*~
+	$(RM) lib.a testapp $(SRCDIR)/*~ *~
 	$(RM) -rf objs

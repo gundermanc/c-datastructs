@@ -61,7 +61,6 @@ static inline void append_node(HashTableNode * list, HashTableNode * node) {
 
 static void put_node(HashTable * ht, HashTableNode * node) {
   int i = hash_to_index(ht, node->key, node->keySize);
-  printf("INDEX 2: %i", i);
   // check for pre-existing list at hashed index
   if(ht->table[i] != NULL) {
     append_node(ht->table[i], node);
@@ -69,6 +68,7 @@ static void put_node(HashTable * ht, HashTableNode * node) {
     // create new list head
     ht->table[i] = node;
   }
+  node->next = NULL;
   ht->numItems++;
 }
 
@@ -77,7 +77,10 @@ static void rehash_table(HashTable * ht, int newSize) {
   HashTableNode ** oldTable = ht->table;
   int oldSize = ht->tableSize;
 
+  printf("REHASH!!\n\n");
+
   // reset table
+  ht->tableSize = newSize;
   ht->table = malloc(sizeof(HashTableNode*) * newSize);
   ht->numItems = 0;
 
@@ -87,9 +90,10 @@ static void rehash_table(HashTable * ht, int newSize) {
 
     // put each node in the list in its new hash index
     while(node != NULL) {
-      put_node(ht, node);
+      HashTableNode * currentNode = node;
 
       node = node->next;
+      put_node(ht, currentNode);
     }
   }
 }
@@ -114,47 +118,6 @@ HashTable * hashtable_new(int tableSize) {
 
   return ht;
 }
-
-/*// checks the specified hash table for a prexisting value
-// if it exists, the value is copied and the function returns true
-// otherwise, the function returns false
-static bool find_value(LL * list, void * key, size_t keySize,
-		       DSValue * newValue, DSValue * oldValue,
-		       bool deleteValOnNull) {
-  LLIterator iterator;
-
-  // check for prexisting value in linked list
-  ll_iterator_get(&iterator, list);
-  while(ll_iterator_has_next(&iterator)) {
-    DSValue unionedNode;
-
-    // look at next item without removing from the list
-    if(ll_iterator_peek(&iterator, &unionedNode)) {
-      HashTableNode * node = unionedNode.pointerVal;
-
-      // if we found the item we are looking for, save old value and update
-      if(memcmp(node->key, key, keySize) == 0) {
-
-	if(oldValue != NULL) {
-	  memcpy(oldValue, &node->value, sizeof(DSValue));
-	}
-
-	if(newValue != NULL) {
-	  memcpy(&node->value, newValue, sizeof(DSValue));
-	} else if(deleteValOnNull) {
-	  // newValue is NULL, delete the value
-	  ll_iterator_remove(&iterator);
-	}
-
-	return true;
-      }
-    }
-
-    // advance iterator
-    ll_iterator_pop(&iterator, NULL);
-  }
-  return false;
-  }*/
 
 static void node_free(HashTableNode * node) {
   free(node->key);
@@ -241,7 +204,7 @@ bool hashtable_put(HashTable * ht, void * key, size_t keySize,
   int i = hash_to_index(ht, key, keySize);
   bool oldValueExists = false;
 
-  printf("INDEX 1: %i", i);
+  printf("PUT %i;", i);
 
   if(ht->table[i] != NULL) {
     oldValueExists = find_value(ht, i, key, keySize, newValue, oldValue,
@@ -255,26 +218,6 @@ bool hashtable_put(HashTable * ht, void * key, size_t keySize,
   }
 
   check_size(ht);
-  /*
- // check for pre-existing list at hashed index
-  if(ht->table[i] != NULL) {
-    oldValueExists = find_value(ht, i, key, keySize, newValue, oldValue,
-				true);
-    printf("PREXIST : %i", oldValueExists);
-    if(newValue == NULL) {
-      ht->numItems--;
-    } else if(!oldValueExists) {
-      append_value(ht->table[i], key, keySize, newValue);
-      ht->numItems++;
-      check_size();
-    }
-  } else {
-
-    // create new list head/first node
-    ht->table[i] = node_new(key, keySize, newValue, NULL);
-    ht->numItems++;
-    check_size();
-    }*/
 
   return oldValueExists;
   /*
@@ -356,8 +299,9 @@ static bool iterator_update(HashTableIterator * i) {
   ll_iterator_get(&i->currentIterator, i->table->table[i->index]);
 
   return true;
-}
+  } */
 
+/*
 // gets an iterator object for this hashtable
 void hashtable_iterator_get(HashTable * ht, HashTableIterator * i) {
   i->table = ht; // store table in iterator
@@ -365,7 +309,9 @@ void hashtable_iterator_get(HashTable * ht, HashTableIterator * i) {
 
   iterator_update(i);
 }
+*/
 
+/*
 // checks to see if any items remain
 bool hashtable_iterator_has_next(HashTableIterator * i) {
 
