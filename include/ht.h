@@ -25,7 +25,7 @@
 #include <string.h>
 #include "build_config.h"
 
-// HashTable Item Node
+/* HashTable List Node */
 typedef struct tagHashTableNode {
   void * key;
   size_t keySize;
@@ -33,7 +33,7 @@ typedef struct tagHashTableNode {
   DSValue value;
 }HashTableNode;
 
-// HashTable Structure definition
+/* HashTable Structure definition */
 typedef struct tagHashTable {
   HashTableNode ** table;
   int tableSize;
@@ -42,7 +42,7 @@ typedef struct tagHashTable {
   int numItems;
 }HashTable;
 
-// HashTable Iterator structure defintion
+/* HashTable Iterator structure defintion */
 typedef struct tagHashTableIterator {
   HashTable * instance;
   int index;
@@ -54,31 +54,31 @@ HashTable * ht_new(int tableSize, int blockSize, float loadFactor);
 
 #ifdef DATASTRUCT_ENABLE_BOOL
 bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue);
-#endif // DATASTRUCT_ENABLE_BOOL
+#endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
 bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValue);
-#endif // DATASTRUCT_ENABLE_DOUBLE
+#endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
 bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue);
-#endif // DATASTRUCT_ENABLE_LONG
+#endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
 bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue);
-#endif // DATASTRUCT_ENABLE_INT
+#endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
 bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue);
-#endif // DATASTRUCT_ENABLE_SHORT
+#endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
 bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue);
-#endif // DATASTRUCT_ENABLE_CHAR
+#endif /* DATASTRUCT_ENABLE_CHAR */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
 bool ht_put_pointer(HashTable * ht, char * key, void * newValue, void ** oldValue);
-#endif // DATASTRUCT_ENABLE_POINTER
+#endif /* DATASTRUCT_ENABLE_POINTER */
 
 
 bool ht_get(HashTable * ht, char * key, DSValue * value);

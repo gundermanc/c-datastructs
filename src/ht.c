@@ -88,12 +88,12 @@ static void put_node(HashTable * ht, HashTableNode * node) {
 
   int i = hash_to_index(ht, node->key, node->keySize);
 
-  // check for pre-existing list at hashed index
+  /* check for pre-existing list at hashed index */
   if(ht->table[i] != NULL) {
     append_node(ht->table[i], node);
   } else {
 
-    // create new list head
+    /* create new list head */
     ht->table[i] = node;
   }
 
@@ -120,7 +120,7 @@ static void rehash_table(HashTable * ht, size_t newSize) {
   for(i = 0; i < oldSize; i++) {
     HashTableNode * node = oldTable[i];
 
-    // put each node in the list in its new hash index
+    /* put each node in the list in its new hash index */
     while(node != NULL) {
       HashTableNode * currentNode = node;
 
@@ -167,6 +167,35 @@ HashTable * ht_new(int tableSize, int blockSize, float loadFactor) {
 }
 
 /**
+ * Helper method that exchanges old values in the hashtable with new
+ * ones.
+ * ht: hashtable instance.
+ * newValue: the new value to set.
+ * prevNode: the node before the current node.
+ * deleteValOnNull: If true, deletes the value if newValue is null.
+ * i: current linked list index
+ */
+static void exchange_values(HashTable * ht, DSValue * newValue,
+			    HashTableNode * prevNode,
+			    bool deleteValOnNull, int i) {
+  /* if newValue is provided, store it in the pre-exising node */
+  if(newValue != NULL) {
+    memcpy(&ht->table[i]->value, newValue, sizeof(DSValue));
+  } else if(deleteValOnNull) {
+
+    /* newValue is NULL, delete the value */
+    if(prevNode != NULL) {
+      prevNode->next = ht->table[i]->next;
+    } else {
+
+      /* at head, delete list */
+      ht->table[i] = NULL;
+    }
+    node_free(ht->table[i]);
+  }
+}
+
+/**
  * Checks the specified linked list for a prexisting value.
  * ht: the instance of hashtable.
  * i: the index of the linked list in which to look.
@@ -197,21 +226,8 @@ static bool find_value(HashTable * ht, int i, void * key, size_t keySize,
 	memcpy(oldValue, &curNode->value, sizeof(DSValue));
       }
 
-      /* if newValue is provided, store it */
-      if(newValue != NULL) {
-	memcpy(&curNode->value, newValue, sizeof(DSValue));
-      } else if(deleteValOnNull) {
-
-	/* newValue is NULL, delete the value */
-	if(prevNode != NULL) {
-	  prevNode->next = curNode->next;
-	} else {
-
-	  /* at head, delete list */
-	  ht->table[i] = NULL;
-	}
-	node_free(curNode);
-      }
+      /* exchange old value with new one */
+      exchange_values(ht, newValue, prevNode, deleteValOnNull, i);
 
       return true;
     }
@@ -311,7 +327,7 @@ bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue) {
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_BOOL
+#endif /* DATASTRUCT_ENABLE_BOOL */
 
 /**
  * Puts a double in the hashtable.
@@ -336,7 +352,7 @@ bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValu
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_DOUBLE
+#endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 /**
  * Puts a long in the hashtable.
@@ -361,7 +377,7 @@ bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue) {
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_LONG
+#endif /* DATASTRUCT_ENABLE_LONG */
 
 /**
  * Puts an int in the hashtable.
@@ -386,7 +402,7 @@ bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue) {
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_INT
+#endif /* DATASTRUCT_ENABLE_INT */
 
 /**
  * Puts a short in the hashtable.
@@ -411,7 +427,7 @@ bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue) 
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_SHORT
+#endif /* DATASTRUCT_ENABLE_SHORT */
 
 /**
  * Puts a char in the hashtable.
@@ -436,7 +452,7 @@ bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue) {
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_CHAR
+#endif /* DATASTRUCT_ENABLE_CHAR */
 
 /**
  * Puts a pointer in the hashtable.
@@ -461,28 +477,7 @@ bool ht_put_pointer(HashTable * ht, char * key, void * newValue, void ** oldValu
   }
   return oldValueExists;
 }
-#endif // DATASTRUCT_ENABLE_POINTER
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif /* DATASTRUCT_ENABLE_POINTER */
 
 /**
  * Gets a value hashed from hashtable using raw buffer as key.
@@ -544,7 +539,7 @@ static bool iterator_next_bucket(HashTableIterator * i) {
 
   /* if there are no buckets left in the list, return error */
   if(i->index == i->instance->tableSize) {
-    return false; // no more buckets
+    return false;
   }
 
   /* set current bucket to first bucket in list */
@@ -598,6 +593,62 @@ bool ht_iter_has_next(HashTableIterator * i) {
 }
 
 /**
+ * Evaluates the remove argument.
+ * remove: If true, remove sthe currentNode from the the hashtable and frees it.
+ */
+static void free_node_case(HashTableIterator * i, HashTableNode * currentNode,
+			   bool remove) {
+
+  /* relink the list to skip current node and free current node */
+  if(remove) {
+
+    /* if this is the first node in the list, set head to null */
+    if(i->prevNode == NULL) {
+      i->instance->table[i->index] = NULL;
+    } else {
+      i->prevNode->next = currentNode->next;
+    }
+
+    node_free(currentNode);
+  }
+}
+
+/**
+ * Copies the key key from the current node to the provided key buffer
+ * currentNode: the node to copy the key from.
+ * keyBuffer: The buffer to copy the key to.
+ * keyBufferLen: the length of the key buffer, in bytes.
+ */
+static void copy_node_key(HashTableNode * currentNode, void * keyBuffer,
+			  size_t keyBufferLen, size_t * keyLen) {
+
+  /* copy as much of the key as will fit in the buffer */
+  if(keyBuffer != NULL) {
+    size_t writeSize = keyBufferLen < currentNode->keySize
+      ? keyBufferLen:currentNode->keySize;
+
+    memcpy(keyBuffer, currentNode->key, writeSize);
+
+    if(keyLen != NULL) {
+      *keyLen = currentNode->keySize;
+    }
+  }
+
+}
+
+/**
+ * Copies the value from the provided node to a DSValue buffer.
+ * currentNode: the node whos value will be copied.
+ * value: the DSValue buffer that will recv. the value.
+ */
+static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
+  /* copy out the value */
+  if(value != NULL) {
+    memcpy(value, &currentNode->value, sizeof(DSValue));
+  }
+}
+
+			    /**
  * Gets next item in the hashtable, via the iterator. This method is convenient
  * for listing the entire contents of the hashtable, removing items matching a
  * certain pattern, or removing items that contain pointers to dynamically
@@ -630,39 +681,16 @@ bool ht_iter_remove(HashTableIterator * i, void * keyBuffer,
   if(ht_iter_has_next(i)) {
     HashTableNode * currentNode = i->currentNode;
 
-    /* copy as much of the key as will fit in the buffer */
-    if(keyBuffer != NULL) {
-      size_t writeSize = keyBufferLen < currentNode->keySize
-	? keyBufferLen:currentNode->keySize;
-
-      memcpy(keyBuffer, currentNode->key, writeSize);
-
-      if(keyLen != NULL) {
-	*keyLen = currentNode->keySize;
-      }
-    }
-
-    /* copy out the value */
-    if(value != NULL) {
-      memcpy(value, &currentNode->value, sizeof(DSValue));
-    }
+    /* copy the key and value to the external buffers */
+    copy_node_key(currentNode, keyBuffer, keyBufferLen, keyLen);
+    copy_node_value(currentNode, value);
 
     i->currentNode = currentNode->next;
 
-    /* relink the list to skip current node and free current node */
-    if(remove) {
+    /* check if we need to remove node */
+    free_node_case(i, currentNode, remove);
 
-      /* if this is the first node in the list, set head to null */
-      if(i->prevNode == NULL) {
-	i->instance->table[i->index] = NULL;
-      } else {
-	i->prevNode->next = currentNode->next;
-      }
-
-      node_free(currentNode);
-    } else {
-      i->prevNode = currentNode;
-    }
+    i->prevNode = currentNode;
 
     return true;
   }
