@@ -34,7 +34,7 @@ testapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stack.o ll.o sb.o hashtable.o
+library: stack.o ll.o sb.o hashtable.o lookup3.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
 	$(OBJDIR)/hashtable.o $(OBJDIR)/sha256.o
 
@@ -61,6 +61,10 @@ hashtable.o: buildfs ll.o sha256.o $(SRCDIR)/hashtable.c
 # build sha256 object
 sha256.o: buildfs $(SRCDIR)/sha256.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sha256.c
+
+# build lookup3 object
+lookup3.o: buildfs $(SRCDIR)/lookup3.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/lookup3.c
 
 # remove all binaries and annoying Emacs Backups
 clean:

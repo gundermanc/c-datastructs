@@ -28,7 +28,7 @@
 #include "hashtable.h"
 
 int main() {
-  HashTable * ht = hashtable_new(2, 10);
+  HashTable * ht = hashtable_new(10, 10, 0.75f);
   HashTableIterator i;
   DSValue val;
   bool f;
@@ -54,10 +54,21 @@ int main() {
   hashtable_iterator_get(ht, &i);
 
   while(hashtable_iterator_has_next(&i)) {
-    char key[99];
+    char key[99] = "" ;
     DSValue value;
-    hashtable_iterator_remove(&i, key, 99, &value, true);
+    hashtable_iterator_remove(&i, key, 99, &value, NULL, false);
     printf("%s : %i", key, value.intVal);
   }
+
+  printf("\n\n\n");
+  hashtable_iterator_get(ht, &i);
+  while(hashtable_iterator_has_next(&i)) {
+    char key[99];
+    DSValue value;
+    hashtable_iterator_remove(&i, key, 99, &value, NULL, false);
+    printf("%s : %i", key, value.intVal);
+  }
+
+  hashtable_free(ht);
   return 0;
 }
