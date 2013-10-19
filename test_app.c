@@ -31,7 +31,6 @@ int main() {
   HashTable * ht = ht_new(10, 10, 0.75f);
   HashTableIterator i;
   DSValue val;
-  bool f;
 
   val.intVal = 1;
   ht_put(ht, "A", 5, &val, NULL);
@@ -51,21 +50,21 @@ int main() {
   val.intVal = 6;
   ht_put(ht, "sdfsf", 5, &val, NULL);
 
-  ht_iterator_get(ht, &i);
+  ht_iter_get(ht, &i);
 
-  while(ht_iterator_has_next(&i)) {
+  while(ht_iter_has_next(&i)) {
     char key[99] = "" ;
     DSValue value;
-    ht_iterator_remove(&i, key, 99, &value, NULL, false);
+    ht_iter_remove(&i, key, 99, &value, NULL, false);
     printf("%s : %i", key, value.intVal);
   }
 
   printf("\n\n\n");
-  ht_iterator_get(ht, &i);
-  while(ht_iterator_has_next(&i)) {
+  ht_iter_get(ht, &i);
+  while(ht_iter_has_next(&i)) {
     char key[99];
     DSValue value;
-    ht_iterator_remove(&i, key, 99, &value, NULL, false);
+    ht_iter_remove(&i, key, 99, &value, NULL, false);
     printf("%s : %i", key, value.intVal);
   }
 

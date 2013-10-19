@@ -36,14 +36,14 @@ SB * sb_new(int blockSize) {
 // destination should be sb_size +1
 static void  destroy_list_items(SB * sb) {
   LLIterator iterator;
-  ll_iterator_get(&iterator, sb->list); // gets iterator for list
+  ll_iter_get(&iterator, sb->list); // gets iterator for list
 
   // iterate through all blocks
-  while(ll_iterator_has_next(&iterator)) {
+  while(ll_iter_has_next(&iterator)) {
     // get object payload
-    char * block = (char*)ll_iterator_remove(&iterator).pointerVal;
+    char * block = (char*)ll_iter_remove(&iterator).pointerVal;
     free(block); // free the object payload
-    //ll_iterator_remove(&iterator); // remove and free object
+    //ll_iter_remove(&iterator); // remove and free object
   }
 }
 
@@ -99,14 +99,14 @@ int sb_to_string(SB * sb, char * dst, int dstLen) {
   int i = 0;
   int blockIndex = 0;
 
-  ll_iterator_get(&iterator, sb->list); // gets iterator for list
+  ll_iter_get(&iterator, sb->list); // gets iterator for list
 
   // iterate through all blocks
-  while(ll_iterator_has_next(&iterator)) {
+  while(ll_iter_has_next(&iterator)) {
     DSValue value;
     char * block;
 
-    ll_iterator_pop(&iterator, &value); // get payload of chars
+    ll_iter_pop(&iterator, &value); // get payload of chars
     block = (char*)value.pointerVal;
 
     // copy each char to buffer

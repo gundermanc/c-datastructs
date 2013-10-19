@@ -1,9 +1,9 @@
 /**
  * Unioned Linked List
  * (C) 2013 Christian Gunderman
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
+ * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,10 +12,10 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this program.  If not, see 
+ * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Contact Email: gundermanc@gmail.com 
+ * Contact Email: gundermanc@gmail.com
  */
 
 #include "ll.h"
@@ -39,7 +39,7 @@ int ll_size(LL * list) {
 
 // frees linked list. List MUST be empty first
 // empty list using LLIterator and a while loop
-// and call ll_iterator_remove()
+// and call ll_iter_remove()
 void ll_free(LL * list) {
   free(list); 
 }
@@ -143,7 +143,7 @@ LLNode * ll_get_node(LL * list, int index) {
 }
 
 // gets an iterator to iterate through the list
-void ll_iterator_get(LLIterator * iteratorObject, LL * list) {
+void ll_iter_get(LLIterator * iteratorObject, LL * list) {
   iteratorObject->list = list;
   iteratorObject->previous = 0;
   iteratorObject->head = list->head;
@@ -152,7 +152,7 @@ void ll_iterator_get(LLIterator * iteratorObject, LL * list) {
 
 // pops current item off iterator, and switches to next one
 // returns true if success and false if not success
-bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value) {
+bool ll_iter_pop(LLIterator * iteratorObject, DSValue * value) {
   if(iteratorObject->cursor != 0) {
     DSValue payload = iteratorObject->cursor->payload;
     iteratorObject->previous = iteratorObject->cursor;
@@ -167,7 +167,7 @@ bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value) {
 }
 
 // gets current item in iterator, without switching to next one
-bool ll_iterator_peek(LLIterator * iterator, DSValue * value) {
+bool ll_iter_peek(LLIterator * iterator, DSValue * value) {
   if(iterator->cursor != 0) {
     memcpy(value, &iterator->cursor->payload, sizeof(DSValue));
     return true;
@@ -176,13 +176,13 @@ bool ll_iterator_peek(LLIterator * iterator, DSValue * value) {
 }
 
 // are there items left in iterator
-bool ll_iterator_has_next(LLIterator * iteratorObject) {
+bool ll_iter_has_next(LLIterator * iteratorObject) {
   return (iteratorObject->cursor != 0);
 }
 
 // removes the current item from the iterator
 // be sure to use proper peek/pop combo
-DSValue ll_iterator_remove(LLIterator * iterator) {
+DSValue ll_iter_remove(LLIterator * iterator) {
   DSValue payload;
   if(iterator->cursor != 0) {
     LLNode * node = iterator->cursor;

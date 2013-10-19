@@ -81,13 +81,13 @@ void ll_append_pointer(LL * list, void * value);
 
 LLNode * ll_get_node(LL * list, int index);
 
-void ll_iterator_get(LLIterator * iteratorObject, LL * list);
+void ll_iter_get(LLIterator * iteratorObject, LL * list);
 
-bool ll_iterator_pop(LLIterator * iteratorObject, DSValue * value);
+bool ll_iter_pop(LLIterator * iteratorObject, DSValue * value);
 
-bool ll_iterator_peek(LLIterator * iteratorObject, DSValue * value);
+bool ll_iter_peek(LLIterator * iteratorObject, DSValue * value);
 
-bool ll_iterator_has_next(LLIterator * iteratorObject);
+bool ll_iter_has_next(LLIterator * iteratorObject);
 
-DSValue ll_iterator_remove(LLIterator * iteratorObject);
+DSValue ll_iter_remove(LLIterator * iteratorObject);
 #endif //LL__H__
