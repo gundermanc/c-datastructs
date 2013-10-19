@@ -186,12 +186,13 @@ static void exchange_values(HashTable * ht, DSValue * newValue,
     /* newValue is NULL, delete the value */
     if(prevNode != NULL) {
       prevNode->next = ht->table[i]->next;
+      node_free(ht->table[i]);
     } else {
 
       /* at head, delete list */
+      node_free(ht->table[i]);
       ht->table[i] = NULL;
     }
-    node_free(ht->table[i]);
   }
 }
 
@@ -263,7 +264,8 @@ static HashTableNode * node_new(void * key, size_t keySize, DSValue * value,
  * ht: the hashtable instance.
  * key: the key which the value will be hashted to
  * keySize: The number of bytes from key that will be used for the key.
- * newValue: A pointer to a new value to store.
+ * newValue: A pointer to a new value to store. If this value is NULL, the
+ * item at the specified key is removed from the list.
  * oldValue: A buffer that will recv. the old value hashed to this key. Pass
  * null if you don't care about the old value.
  * return: true if oldValue contains a value previously stored at the specified
@@ -294,7 +296,8 @@ bool ht_put_raw_key(HashTable * ht, void * key, size_t keySize,
  * Stores a value in the hashtable using a null terminated string as the key.
  * ht: the hashtable instance.
  * key: the key which the value will be hashted to
- * newValue: A pointer to a new value to store.
+ * newValue: A pointer to a new value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A buffer that will recv. the old value hashed to this key. Pass
  * null if you don't care about the old value.
  * return: true if oldValue contains a value previously stored at the specified
@@ -307,7 +310,8 @@ bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) 
 /**
  * Puts a bool in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -332,7 +336,8 @@ bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue) {
 /**
  * Puts a double in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -357,7 +362,8 @@ bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValu
 /**
  * Puts a long in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -382,7 +388,8 @@ bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue) {
 /**
  * Puts an int in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -407,7 +414,8 @@ bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue) {
 /**
  * Puts a short in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -432,7 +440,8 @@ bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue) 
 /**
  * Puts a char in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
@@ -457,7 +466,8 @@ bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue) {
 /**
  * Puts a pointer in the hashtable.
  * key: key to hash this value to.
- * newValue: The value to store.
+ * newValue: The value to store. If value is NULL, value at this
+ * key will be removed.
  * oldValue: A pointer to a variable that will recv. the value previously stored
  * at this key.
  * returns: true if the given key previous had a value, and/or it was returned
