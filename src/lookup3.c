@@ -1,5 +1,5 @@
-/*
-  -------------------------------------------------------------------------------
+/**
+ * -----------------------------------------------------------------------------
   lookup3.c, by Bob Jenkins, May 2006, Public Domain.
 
   These are functions for producing 32-bit hashes for hash table lookup.
@@ -39,7 +39,8 @@
   For information on why I chose this hash, see:
   <http://burtleburtle.net/bob/hash/doobs.html>
 */
-//#define SELF_TEST
+
+/* Use only code that plays nicely with Valgrind */
 #define VALGRIND
 
 #include <stdio.h>      /* defines printf for tests */

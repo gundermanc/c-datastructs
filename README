@@ -20,20 +20,51 @@ Contact Email: gundermanc@gmail.com
 INTRODUCTION:
 This package compiles to a C static library containing a few common data
 structures, including a Stack, a tail cached Linked List, a dynamically
-expanding string buffer, and a HashTable.
+expanding string buffer, and a dynamically resizing HashTable.
+
+DATASTRUCTURES:
+ht.c  : Dynamically expanding C hashtable.
+ll.c  : Tail Cached Linked list. Supports iterating and appending.
+stk.c : Array stack. Supports peek and pop.
+sb.c  : Dynamically expanding String "rope" buffer.
 
 All of these data structures can store the same common type: DSValue,
 a union defined in include/build_config.h. By commenting out preprocessor
 definitions, a developer can define how large DSValue will be, and what
-kind of primitive data types can be stored in it.
+kind of primitive data types can be stored in it. Tweak this value to your
+heart's content to optimize these data structures for your particular
+application.
 
 BUILDING:
 This build requires GCC and GNU make. Run 'make' or 'make library' to 
 build the static library which is out put to the main directory and is
 named lib.a. For your convenience, a test_app.c file is included as well
 which can be used to test the structures and get your bearings. This can
-be build with 'make testapp'. 
+be build with 'make testapp'.
 
 DOCUMENTATION:
-I am terribly lazy, so all documentation is in the form of comments in
-the C files. Most of it is pretty self explanitory.
+I am terribly lazy, so most documentation is in the form of comments in
+the C files. Most of it is pretty self explanatory. Each C file contains
+one data structure. It is all implemented in C89 code, except for the single
+line comments, which I have yet to convert to to C comments, rather than C++
+ones.
+
+To use any of the libraries, import their headers from the include directory
+and link to the static library. You should then be able to create any of the
+structures using **_new() function, where ** is the file name of the structure.
+
+For additional operations, see the comments in the source files. They are
+well commented and reable. :)
+
+BUGS:
+Hopefully none, however, my testing for these structures have been a bit
+skewed. I have a specific project in mind for these structures, so my
+testing has reflected the cases I am likely to encounter, meaning I may have
+missed some bugs. Shoot me an email if you find any. The linkedlist, stack
+and string buffer have been around for almost a year. They are very stable.
+The hashtable, however, is newever and MIGHT have bugs.
+
+MEMORY ERRORS:
+None. Checked with Valgrind.
+
+
