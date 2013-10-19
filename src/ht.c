@@ -193,6 +193,7 @@ static void exchange_values(HashTable * ht, DSValue * newValue,
       node_free(ht->table[i]);
       ht->table[i] = NULL;
     }
+    ht->numItems--;
   }
 }
 
