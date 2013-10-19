@@ -72,7 +72,7 @@ void ll_append_short(LL * list, short value);
 #endif // DATASTRUCT_ENABLE_SHORT
 
 #ifdef DATASTRUCT_ENABLE_CHAR
-void ll_append_charl(LL * list, char value);
+void ll_append_char(LL * list, char value);
 #endif // DATASTRUCT_ENABLE_CHAR
 
 #ifdef DATASTRUCT_ENABLE_POINTER

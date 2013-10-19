@@ -34,7 +34,7 @@ testapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stack.o ll.o sb.o ht.o
+library: stk.o ll.o sb.o ht.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
 	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o
 
@@ -43,8 +43,8 @@ buildfs:
 	mkdir -p $(OBJDIR)
 
 # build stack object
-stack.o: buildfs $(SRCDIR)/stack.c
-	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/stack.c
+stk.o: buildfs $(SRCDIR)/stk.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/stk.c
 
 # build linked list object
 ll.o: buildfs $(SRCDIR)/ll.c
@@ -64,5 +64,5 @@ lookup3.o: buildfs $(SRCDIR)/lookup3.c
 
 # remove all binaries and annoying Emacs Backups
 clean:
-	$(RM) lib.a testapp $(SRCDIR)/*~ *~
+	$(RM) lib.a testapp $(SRCDIR)/*~ $(INCDIR)/*~ *~
 	$(RM) -rf objs

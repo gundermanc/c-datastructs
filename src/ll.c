@@ -41,7 +41,7 @@ int ll_size(LL * list) {
 // empty list using LLIterator and a while loop
 // and call ll_iter_remove()
 void ll_free(LL * list) {
-  free(list); 
+  free(list);
 }
 
 // appends an item to the end of the linked list

@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include "sb.h"
 #include "ll.h"
-#include "stack.h"
+#include "stk.h"
 #include "ht.h"
 
 int main() {
