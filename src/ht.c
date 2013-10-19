@@ -681,7 +681,7 @@ static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
  * (unless you fed in the key length in the put method as strlen(text) + 1.
  * remove: if true, removes the value from the hashtable.
  */
-bool ht_iter_remove(HashTableIterator * i, void * keyBuffer,
+bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
 			       size_t keyBufferLen, DSValue * value,
 			       size_t * keyLen, bool remove) {
 
@@ -721,7 +721,7 @@ void ht_free(HashTable * ht) {
   ht_iter_get(ht, &i);
 
   /* free linked lists */
-  while(ht_iter_remove(&i, NULL, 0, NULL, NULL, true) != false);
+  while(ht_iter_next(&i, NULL, 0, NULL, NULL, true) != false);
 
   /* free the array and struct */
   free(ht->table);

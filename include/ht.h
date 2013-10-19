@@ -96,11 +96,9 @@ bool ht_iter_has_next(HashTableIterator * i);
 
 void ht_node_free(HashTableNode * node);
 
-bool ht_iter_remove(HashTableIterator * i, void * keyBuffer,
+bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
 			       size_t keyBufferLen, DSValue * value,
 			       size_t * keyLen, bool remove);
-
-HashTableNode * ht_iter_next(HashTableIterator * i);
 
 int ht_size(HashTable * ht);
 
