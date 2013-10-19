@@ -29,32 +29,6 @@
 
 /* place any scratch code you want to test the library here: */
 int main() {
-  HashTable * ht = ht_new(10, 10, 0.75f);
-  HashTableIterator i;
-  DSValue val;
 
-  ht_put_int(ht, "A", 1, NULL);
-  ht_put_int(ht, "Food!", 3, NULL);
-  ht_put_int(ht, "sdfsf", 6, NULL);
-
-  ht_iter_get(ht, &i);
-
-  while(ht_iter_has_next(&i)) {
-    char key[99] = "" ;
-    DSValue value;
-    ht_iter_remove(&i, key, 99, &value, NULL, true);
-    printf("%s : %i", key, value.intVal);
-  }
-
-  printf("\n\n\n");
-  ht_iter_get(ht, &i);
-  while(ht_iter_has_next(&i)) {
-    char key[99];
-    DSValue value;
-    ht_iter_remove(&i, key, 99, &value, NULL, false);
-    printf("%s : %i", key, value.intVal);
-  }
-
-  ht_free(ht);
   return 0;
 }
