@@ -34,9 +34,9 @@ testapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stack.o ll.o sb.o hashtable.o lookup3.o
+library: stack.o ll.o sb.o ht.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
-	$(OBJDIR)/hashtable.o $(OBJDIR)/sha256.o
+	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o
 
 # build the debug library
 buildfs:
@@ -55,12 +55,8 @@ sb.o: buildfs ll.o $(SRCDIR)/sb.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sb.c
 
 # build hashtable object
-hashtable.o: buildfs ll.o sha256.o $(SRCDIR)/hashtable.c
-	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/hashtable.c
-
-# build sha256 object
-sha256.o: buildfs $(SRCDIR)/sha256.c
-	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/sha256.c
+ht.o: buildfs lookup3.o $(SRCDIR)/ht.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/ht.c
 
 # build lookup3 object
 lookup3.o: buildfs $(SRCDIR)/lookup3.c

@@ -20,7 +20,6 @@
  *
  * Contact Email: gundermanc@gmail.com
  */
- */
 
 #ifndef LOOKUP3__H__
 #define LOOKUP3__H__
@@ -28,4 +27,4 @@
 #include <stdint.h>
 uint32_t hashlittle( const void *key, size_t length, uint32_t initval);
 
-#endif LOOKUP3__H__
+#endif /* LOOKUP3__H__*/

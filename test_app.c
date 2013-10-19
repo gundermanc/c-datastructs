@@ -25,50 +25,50 @@
 #include "sb.h"
 #include "ll.h"
 #include "stack.h"
-#include "hashtable.h"
+#include "ht.h"
 
 int main() {
-  HashTable * ht = hashtable_new(10, 10, 0.75f);
+  HashTable * ht = ht_new(10, 10, 0.75f);
   HashTableIterator i;
   DSValue val;
   bool f;
 
   val.intVal = 1;
-  hashtable_put(ht, "A", 5, &val, NULL);
+  ht_put(ht, "A", 5, &val, NULL);
 
   val.intVal = 2;
-  hashtable_put(ht, "Ho", 5, &val, NULL);
+  ht_put(ht, "Ho", 5, &val, NULL);
 
   val.intVal = 3;
-  hashtable_put(ht, "bad", 5, &val, NULL);
+  ht_put(ht, "bad", 5, &val, NULL);
 
   val.intVal = 4;
-  hashtable_put(ht, "foobar", 6, &val, NULL);
+  ht_put(ht, "foobar", 6, &val, NULL);
 
   val.intVal = 5;
-  hashtable_put(ht, "random", 6, &val, NULL);
+  ht_put(ht, "random", 6, &val, NULL);
 
   val.intVal = 6;
-  hashtable_put(ht, "sdfsf", 5, &val, NULL);
+  ht_put(ht, "sdfsf", 5, &val, NULL);
 
-  hashtable_iterator_get(ht, &i);
+  ht_iterator_get(ht, &i);
 
-  while(hashtable_iterator_has_next(&i)) {
+  while(ht_iterator_has_next(&i)) {
     char key[99] = "" ;
     DSValue value;
-    hashtable_iterator_remove(&i, key, 99, &value, NULL, false);
+    ht_iterator_remove(&i, key, 99, &value, NULL, false);
     printf("%s : %i", key, value.intVal);
   }
 
   printf("\n\n\n");
-  hashtable_iterator_get(ht, &i);
-  while(hashtable_iterator_has_next(&i)) {
+  ht_iterator_get(ht, &i);
+  while(ht_iterator_has_next(&i)) {
     char key[99];
     DSValue value;
-    hashtable_iterator_remove(&i, key, 99, &value, NULL, false);
+    ht_iterator_remove(&i, key, 99, &value, NULL, false);
     printf("%s : %i", key, value.intVal);
   }
 
-  hashtable_free(ht);
+  ht_free(ht);
   return 0;
 }
