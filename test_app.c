@@ -27,35 +27,22 @@
 #include "stk.h"
 #include "ht.h"
 
+/* place any scratch code you want to test the library here: */
 int main() {
   HashTable * ht = ht_new(10, 10, 0.75f);
   HashTableIterator i;
   DSValue val;
 
-  val.intVal = 1;
-  ht_put(ht, "A", &val, NULL);
-
-  val.intVal = 2;
-  ht_put(ht, "Ho", &val, NULL);
-
-  val.intVal = 3;
-  ht_put(ht, "bad", &val, NULL);
-
-  val.intVal = 4;
-  ht_put(ht, "foobar", &val, NULL);
-
-  val.intVal = 5;
-  ht_put(ht, "random", &val, NULL);
-
-  val.intVal = 6;
-  ht_put(ht, "sdfsf", &val, NULL);
+  ht_put_int(ht, "A", 1, NULL);
+  ht_put_int(ht, "Food!", 3, NULL);
+  ht_put_int(ht, "sdfsf", 6, NULL);
 
   ht_iter_get(ht, &i);
 
   while(ht_iter_has_next(&i)) {
     char key[99] = "" ;
     DSValue value;
-    ht_iter_remove(&i, key, 99, &value, NULL, false);
+    ht_iter_remove(&i, key, 99, &value, NULL, true);
     printf("%s : %i", key, value.intVal);
   }
 

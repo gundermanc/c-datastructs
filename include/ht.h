@@ -52,6 +52,35 @@ typedef struct tagHashTableIterator {
 
 HashTable * ht_new(int tableSize, int blockSize, float loadFactor);
 
+#ifdef DATASTRUCT_ENABLE_BOOL
+bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue);
+#endif // DATASTRUCT_ENABLE_BOOL
+
+#ifdef DATASTRUCT_ENABLE_DOUBLE
+bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValue);
+#endif // DATASTRUCT_ENABLE_DOUBLE
+
+#ifdef DATASTRUCT_ENABLE_LONG
+bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue);
+#endif // DATASTRUCT_ENABLE_LONG
+
+#ifdef DATASTRUCT_ENABLE_INT
+bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue);
+#endif // DATASTRUCT_ENABLE_INT
+
+#ifdef DATASTRUCT_ENABLE_SHORT
+bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue);
+#endif // DATASTRUCT_ENABLE_SHORT
+
+#ifdef DATASTRUCT_ENABLE_CHAR
+bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue);
+#endif // DATASTRUCT_ENABLE_CHAR
+
+#ifdef DATASTRUCT_ENABLE_POINTER
+bool ht_put_pointer(HashTable * ht, char * key, void * newValue, void ** oldValue);
+#endif // DATASTRUCT_ENABLE_POINTER
+
+
 bool ht_get(HashTable * ht, char * key, DSValue * value);
 
 bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) ;

@@ -288,6 +288,201 @@ bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) 
   return ht_put_raw_key(ht, key, strlen(key) + 1, newValue, oldValue);
 }
 
+/**
+ * Puts a bool in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_BOOL
+bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.boolVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.boolVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_BOOL
+
+/**
+ * Puts a double in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_DOUBLE
+bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.doubleVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.doubleVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_DOUBLE
+
+/**
+ * Puts a long in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_LONG
+bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.longVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.longVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_LONG
+
+/**
+ * Puts an int in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_INT
+bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.intVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.intVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_INT
+
+/**
+ * Puts a short in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_SHORT
+bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.shortVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.shortVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_SHORT
+
+/**
+ * Puts a char in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_CHAR
+bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.charVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.charVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_CHAR
+
+/**
+ * Puts a pointer in the hashtable.
+ * key: key to hash this value to.
+ * newValue: The value to store.
+ * oldValue: A pointer to a variable that will recv. the value previously stored
+ * at this key.
+ * returns: true if the given key previous had a value, and/or it was returned
+ * in the oldValue variable, and false if it did not.
+ */
+#ifdef DATASTRUCT_ENABLE_POINTER
+bool ht_put_pointer(HashTable * ht, char * key, void * newValue, void ** oldValue) {
+  DSValue newDSValue;
+  DSValue oldDSValue;
+  bool oldValueExists = false;
+  newDSValue.pointerVal = newValue;
+  oldValueExists = ht_put(ht, key, &newDSValue, &oldDSValue);
+
+  /* if pointer for old value was given, output to it */
+  if(oldValue != NULL) {
+    *oldValue = oldDSValue.pointerVal;
+  }
+  return oldValueExists;
+}
+#endif // DATASTRUCT_ENABLE_POINTER
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Gets a value hashed from hashtable using raw buffer as key.
