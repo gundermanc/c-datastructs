@@ -38,7 +38,7 @@ library: stk.o ll.o sb.o ht.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stk.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
 	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o
 
-# build the debug library
+# build the file system
 buildfs:
 	mkdir -p $(OBJDIR)
 
