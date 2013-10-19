@@ -35,7 +35,7 @@ testapp: library
 
 # build just the static library
 library: stk.o ll.o sb.o ht.o
-	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stack.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
+	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stk.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
 	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o
 
 # build the debug library

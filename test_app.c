@@ -33,22 +33,22 @@ int main() {
   DSValue val;
 
   val.intVal = 1;
-  ht_put(ht, "A", 5, &val, NULL);
+  ht_put(ht, "A", &val, NULL);
 
   val.intVal = 2;
-  ht_put(ht, "Ho", 5, &val, NULL);
+  ht_put(ht, "Ho", &val, NULL);
 
   val.intVal = 3;
-  ht_put(ht, "bad", 5, &val, NULL);
+  ht_put(ht, "bad", &val, NULL);
 
   val.intVal = 4;
-  ht_put(ht, "foobar", 6, &val, NULL);
+  ht_put(ht, "foobar", &val, NULL);
 
   val.intVal = 5;
-  ht_put(ht, "random", 6, &val, NULL);
+  ht_put(ht, "random", &val, NULL);
 
   val.intVal = 6;
-  ht_put(ht, "sdfsf", 5, &val, NULL);
+  ht_put(ht, "sdfsf", &val, NULL);
 
   ht_iter_get(ht, &i);
 

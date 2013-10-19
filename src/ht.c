@@ -243,7 +243,7 @@ static HashTableNode * node_new(void * key, size_t keySize, DSValue * value,
 }
 
 /**
- * Stores a value in the hashtable.
+ * Stores a value in the hashtable using a buffer of raw bytes as the key.
  * ht: the hashtable instance.
  * key: the key which the value will be hashted to
  * keySize: The number of bytes from key that will be used for the key.
@@ -253,7 +253,7 @@ static HashTableNode * node_new(void * key, size_t keySize, DSValue * value,
  * return: true if oldValue contains a value previously stored at the specified
  * key, or false if no value was stored at this key.
  */
-bool ht_put(HashTable * ht, void * key, size_t keySize,
+bool ht_put_raw_key(HashTable * ht, void * key, size_t keySize,
 		   DSValue * newValue, DSValue * oldValue) {
   int i = hash_to_index(ht, key, keySize);
   bool oldValueExists = false;
@@ -275,7 +275,22 @@ bool ht_put(HashTable * ht, void * key, size_t keySize,
 }
 
 /**
- * Gets a value hashed with specified key from the hashtable.
+ * Stores a value in the hashtable using a null terminated string as the key.
+ * ht: the hashtable instance.
+ * key: the key which the value will be hashted to
+ * newValue: A pointer to a new value to store.
+ * oldValue: A buffer that will recv. the old value hashed to this key. Pass
+ * null if you don't care about the old value.
+ * return: true if oldValue contains a value previously stored at the specified
+ * key, or false if no value was stored at this key.
+ */
+bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) {
+  return ht_put_raw_key(ht, key, strlen(key) + 1, newValue, oldValue);
+}
+
+
+/**
+ * Gets a value hashed from hashtable using raw buffer as key.
  * ht: the hashtable instance
  * key: the key at which the value will be looked up.
  * keySize: the number of bytes from key to be used as the key.
@@ -283,7 +298,7 @@ bool ht_put(HashTable * ht, void * key, size_t keySize,
  * if it exists.
  * returns: true if the specified value exists and false if it does not.
  */
-bool ht_get(HashTable * ht, void * key, size_t keySize, DSValue * value) {
+bool ht_get_raw_key(HashTable * ht, void * key, size_t keySize, DSValue * value) {
 
   /* calculate array index */
   int i = hash_to_index(ht, key, keySize);
@@ -294,6 +309,19 @@ bool ht_get(HashTable * ht, void * key, size_t keySize, DSValue * value) {
   }
 
   return false;
+}
+
+/**
+ * Gets a value hashed with specified null terminated string key from the
+ * hashtable.
+ * ht: the hashtable instance
+ * key: the key at which the value will be looked up. Null terminated String.
+ * value: pointer to a DSValue struct that will receive the stored value,
+ * if it exists.
+ * returns: true if the specified value exists and false if it does not.
+ */
+bool ht_get(HashTable * ht, char * key, DSValue * value) {
+  return ht_get_raw_key(ht, key, strlen(key) + 1, value);
 }
 
 /**
@@ -327,8 +355,6 @@ static bool iterator_next_bucket(HashTableIterator * i) {
   /* set current bucket to first bucket in list */
   i->prevNode = NULL;
   i->currentNode = i->instance->table[i->index];
-
-  printf("index : %i; tablesize: %i; ", i->index, i->instance->tableSize);
 
   return true;
 }

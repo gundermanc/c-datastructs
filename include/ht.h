@@ -52,10 +52,14 @@ typedef struct tagHashTableIterator {
 
 HashTable * ht_new(int tableSize, int blockSize, float loadFactor);
 
-bool ht_put(HashTable * ht, void * key, size_t keySize,
+bool ht_get(HashTable * ht, char * key, DSValue * value);
+
+bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) ;
+
+bool ht_put_raw_key(HashTable * ht, void * key, size_t keySize,
 		   DSValue * newValue, DSValue * oldValue);
 
-bool ht_get(HashTable * ht, void * key, size_t keySize, DSValue * value);
+bool ht_get_raw_key(HashTable * ht, void * key, size_t keySize, DSValue * value);
 
 void ht_iter_get(HashTable * ht, HashTableIterator * i);
 
