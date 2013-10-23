@@ -57,14 +57,13 @@ For additional operations, see the comments in the source files. They are
 well commented and reable. :)
 
 BUGS:
-Hopefully none, however, my testing for these structures have been a bit
-skewed. I have a specific project in mind for these structures, so my
-testing has reflected the cases I am likely to encounter, meaning I may have
-missed some bugs. Shoot me an email if you find any. The linkedlist, stack
-and string buffer have been around for almost a year. They are very stable.
-The hashtable, however, is newever and MIGHT have bugs.
+Most of the code is fairly mature and bug free. The exception to this is the
+hashtable, which is mostly complete, except for the ht_iter_next() method,
+which has several memory errors where pointers are freed and then accessed
+again. This is on the To Fix list for this Friday.
 
 MEMORY ERRORS:
-None. Checked with Valgrind.
+None, except in HashTable. Do not use hashtable until code has matured in release
+1.1. Checked with Valgrind.
 
 
