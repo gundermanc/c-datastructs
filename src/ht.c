@@ -45,7 +45,7 @@ static long hash_to_index(HashTable * ht, void * key, size_t keySize) {
  * Frees a node struct
  * node: the node to free.
  */
-static void node_free(HashTableNode * node) {
+inline static void node_free(HashTableNode * node) {
   free(node->key);
   free(node);
 }
@@ -88,12 +88,12 @@ static void put_node(HashTable * ht, HashTableNode * node) {
 
   int i = hash_to_index(ht, node->key, node->keySize);
 
-  /* check for pre-existing list at hashed index */
+  /* if list exists at index, append to the end */
   if(ht->table[i] != NULL) {
     append_node(ht->table[i], node);
   } else {
 
-    /* create new list head */
+    /* create new list/head */
     ht->table[i] = node;
   }
 
@@ -198,6 +198,40 @@ static void exchange_values(HashTable * ht, DSValue * newValue,
 }
 
 /**
+ * Copies the key key from the current node to the provided key buffer
+ * currentNode: the node to copy the key from.
+ * keyBuffer: The buffer to copy the key to.
+ * keyBufferLen: the length of the key buffer, in bytes.
+ */
+static void copy_node_key(HashTableNode * currentNode, void * keyBuffer,
+			  size_t keyBufferLen, size_t * keyLen) {
+
+  if(keyBuffer != NULL) {
+    size_t writeSize = keyBufferLen < currentNode->keySize
+      ? keyBufferLen:currentNode->keySize;
+
+    /* copy only as much of the key as will fit in the buffer */
+    memcpy(keyBuffer, currentNode->key, writeSize);
+
+    if(keyLen != NULL) {
+      *keyLen = currentNode->keySize;
+    }
+  }
+
+}
+
+/**
+ * Copies the value from the provided node to a DSValue buffer.
+ * currentNode: the node whos value will be copied.
+ * value: the DSValue buffer that will recv. the value.
+ */
+static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
+  if(value != NULL) {
+    memcpy(value, &currentNode->value, sizeof(DSValue));
+  }
+}
+
+/**
  * Checks the specified linked list for a prexisting value.
  * ht: the instance of hashtable.
  * i: the index of the linked list in which to look.
@@ -219,14 +253,12 @@ static bool find_value(HashTable * ht, int i, void * key, size_t keySize,
   /* while tokens remain, keep going */
   while(curNode != NULL) {
 
-    /* if the keys are the same */
+    /* if the keys are the same... */
     if(memcmp(key, curNode->key, curNode->keySize < keySize
 	      ? curNode->keySize:keySize) == 0) {
 
       /* if oldValue buffer is provided, copy previous value to it */
-      if(oldValue != NULL) {
-	memcpy(oldValue, &curNode->value, sizeof(DSValue));
-      }
+      copy_node_value(curNode, oldValue);
 
       /* exchange old value with new one */
       exchange_values(ht, newValue, curNode, prevNode, deleteValOnNull, i);
@@ -642,40 +674,6 @@ static void iter_remove_node(HashTableIterator * i, HashTableNode * currentNode)
     node_free(currentNode);
   }
   i->instance->numItems--;
-}
-
-/**
- * Copies the key key from the current node to the provided key buffer
- * currentNode: the node to copy the key from.
- * keyBuffer: The buffer to copy the key to.
- * keyBufferLen: the length of the key buffer, in bytes.
- */
-static void copy_node_key(HashTableNode * currentNode, void * keyBuffer,
-			  size_t keyBufferLen, size_t * keyLen) {
-
-  if(keyBuffer != NULL) {
-    size_t writeSize = keyBufferLen < currentNode->keySize
-      ? keyBufferLen:currentNode->keySize;
-
-    /* copy only as much of the key as will fit in the buffer */
-    memcpy(keyBuffer, currentNode->key, writeSize);
-
-    if(keyLen != NULL) {
-      *keyLen = currentNode->keySize;
-    }
-  }
-
-}
-
-/**
- * Copies the value from the provided node to a DSValue buffer.
- * currentNode: the node whos value will be copied.
- * value: the DSValue buffer that will recv. the value.
- */
-static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
-  if(value != NULL) {
-    memcpy(value, &currentNode->value, sizeof(DSValue));
-  }
 }
 
 /**
