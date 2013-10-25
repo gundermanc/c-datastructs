@@ -624,29 +624,24 @@ bool ht_iter_has_next(HashTableIterator * i) {
  * Evaluates the remove argument.
  * remove: If true, remove sthe currentNode from the the hashtable and frees it.
  */
-static void free_node_case(HashTableIterator * i, HashTableNode * currentNode,
-			   bool remove) {
+static void iter_remove_node(HashTableIterator * i, HashTableNode * currentNode) {
 
-  /* relink the list to skip current node and free current node */
-  if(remove) {
+  if(currentNode == i->instance->table[i->index]) {
 
-    if(currentNode == i->instance->table[i->index]) {
+    /* if this is the first node in the list,
+     * set head to current head's next node
+     */
+    i->instance->table[i->index] = currentNode->next;
+    node_free(currentNode);
+  } else {
 
-      /* if this is the first node in the list,
-       * set head to current head's next node
-       */
-      i->instance->table[i->index] = currentNode->next;
-      node_free(currentNode);
-    } else {
-
-      /* if not the first node, set the previous node's next to point to current
-       * node's next
-       */
-      i->prevNode->next = currentNode->next;
-      node_free(currentNode);
-    }
-    i->instance->numItems--;
+    /* if not the first node, set the previous node's next to point to current
+     * node's next
+     */
+    i->prevNode->next = currentNode->next;
+    node_free(currentNode);
   }
+  i->instance->numItems--;
 }
 
 /**
@@ -725,7 +720,9 @@ bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
     i->currentNode = currentNode->next;
 
     /* check if we need to remove node */
-    free_node_case(i, currentNode, remove);
+    if(remove) {
+      iter_remove_node(i, currentNode);
+    }
 
     i->prevNode = currentNode;
 
