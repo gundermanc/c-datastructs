@@ -176,7 +176,7 @@ HashTable * ht_new(int tableSize, int blockSize, float loadFactor) {
  * i: current linked list index
  */
 static void exchange_values(HashTable * ht, DSValue * newValue,
-			    HashTableNode * prevNode,
+			    HashTableNode * curNode, HashTableNode * prevNode,
 			    bool deleteValOnNull, int i) {
   /* if newValue is provided, store it in the pre-exising node */
   if(newValue != NULL) {
@@ -185,8 +185,8 @@ static void exchange_values(HashTable * ht, DSValue * newValue,
 
     /* newValue is NULL, delete the value */
     if(prevNode != NULL) {
-      prevNode->next = ht->table[i]->next;
-      node_free(ht->table[i]);
+      prevNode->next = curNode->next;
+      node_free(curNode);
     } else {
 
       /* at head, delete list */
@@ -229,7 +229,7 @@ static bool find_value(HashTable * ht, int i, void * key, size_t keySize,
       }
 
       /* exchange old value with new one */
-      exchange_values(ht, newValue, prevNode, deleteValOnNull, i);
+      exchange_values(ht, newValue, curNode, prevNode, deleteValOnNull, i);
 
       return true;
     }
@@ -530,7 +530,7 @@ bool ht_get(HashTable * ht, char * key, DSValue * value) {
  * i: a HashTableIterator.
  * returns: false if no more buckets, true if buckets remain
  */
-static bool iterator_next_bucket(HashTableIterator * i) {
+static bool iter_next_bucket(HashTableIterator * i) {
 
   /* if no more buckets, return false */
   if(i->index == i->instance->tableSize) {
@@ -563,25 +563,40 @@ static bool iterator_next_bucket(HashTableIterator * i) {
 /**
  * Gets an iterator struct for this hashtable.
  * ht: hashtable index.
- * i: A hashtable iterator instance.
+ * i: A pointer to a buffer the size of HashTableIterator that will recv. the
+ * hashtable iterator instance.
  */
 void ht_iter_get(HashTable * ht, HashTableIterator * i) {
+
+  memset(i, 0, sizeof(HashTableIterator));
 
   /* store table in iterator */
   i->instance = ht;
 
   /* I really don't like this...but we're starting looking at bucket 0
-   * but iterator_next_bucket increments index each time its called...
+   * but iter_next_bucket increments index each time its called...
+   * make note of this quirk before you modify the code.
    */
   i->index = -1;
 
   /* "advance" iterator to first bucket: 0 */
-  iterator_next_bucket(i);
+  iter_next_bucket(i);
 }
 
 
 /**
- * Checks the iterator for items that have not been iterated over yet.
+ * Checks the iterator for items that have not been iterated over yet by
+ * checking the current bucket for the next item. If no more items are left in
+ * current bucket, this function iterates through the remaining buckets until it
+ * finds the next non-empty bucket, or runs out of buckets to search.
+ *
+ * Note: this is a O(k) operation, where k is the size of the hashtable
+ * (number of slots in the array). This is no problem if the data are evenly
+ * distributed across the table, and the table is approximately the size of the
+ * number of items. However, in the worst case, all of the items are in one
+ * linked list, then this function has to iterate across all of the empty array
+ * slots to determine that there are no more items left.
+ *
  * i: an iterator object.
  * returns: true if items remain, and false if no items remain.
  */
@@ -594,8 +609,10 @@ bool ht_iter_has_next(HashTableIterator * i) {
     hasNext = true;
   } else {
 
-    /* current bucket has no more items, try next non-empty bucket */
-    if(iterator_next_bucket(i) && i->currentNode != NULL) {
+    /* current bucket has no more items, move to the next non-empty bucket and
+     * try looking for items again.
+     */
+    if(iter_next_bucket(i) && i->currentNode != NULL) {
       hasNext = true;
     }
   }
@@ -613,14 +630,22 @@ static void free_node_case(HashTableIterator * i, HashTableNode * currentNode,
   /* relink the list to skip current node and free current node */
   if(remove) {
 
-    /* if this is the first node in the list, set head to null */
-    if(i->prevNode == NULL) {
-      i->instance->table[i->index] = NULL;
-    } else {
-      i->prevNode->next = currentNode->next;
-    }
+    if(currentNode == i->instance->table[i->index]) {
 
-    node_free(currentNode);
+      /* if this is the first node in the list,
+       * set head to current head's next node
+       */
+      i->instance->table[i->index] = currentNode->next;
+      node_free(currentNode);
+    } else {
+
+      /* if not the first node, set the previous node's next to point to current
+       * node's next
+       */
+      i->prevNode->next = currentNode->next;
+      node_free(currentNode);
+    }
+    i->instance->numItems--;
   }
 }
 
@@ -633,11 +658,11 @@ static void free_node_case(HashTableIterator * i, HashTableNode * currentNode,
 static void copy_node_key(HashTableNode * currentNode, void * keyBuffer,
 			  size_t keyBufferLen, size_t * keyLen) {
 
-  /* copy as much of the key as will fit in the buffer */
   if(keyBuffer != NULL) {
     size_t writeSize = keyBufferLen < currentNode->keySize
       ? keyBufferLen:currentNode->keySize;
 
+    /* copy only as much of the key as will fit in the buffer */
     memcpy(keyBuffer, currentNode->key, writeSize);
 
     if(keyLen != NULL) {
@@ -653,13 +678,12 @@ static void copy_node_key(HashTableNode * currentNode, void * keyBuffer,
  * value: the DSValue buffer that will recv. the value.
  */
 static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
-  /* copy out the value */
   if(value != NULL) {
     memcpy(value, &currentNode->value, sizeof(DSValue));
   }
 }
 
-			    /**
+/**
  * Gets next item in the hashtable, via the iterator. This method is convenient
  * for listing the entire contents of the hashtable, removing items matching a
  * certain pattern, or removing items that contain pointers to dynamically
@@ -680,14 +704,15 @@ static void copy_node_value(HashTableNode * currentNode, DSValue * value) {
  * from this method will probably not come with NULL termination characters
  * (unless you fed in the key length in the put method as strlen(text) + 1.
  * remove: if true, removes the value from the hashtable.
+ * returns: true if an uniterated item was found and written to the buffers.
  */
 bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
 			       size_t keyBufferLen, DSValue * value,
 			       size_t * keyLen, bool remove) {
 
   /* checks to see if a value exists
-   * this call also advances the iterator if neccessary.
-   * make note of this. it isn't magic.
+   * this call also advances the iterator to the next non-empty bucket
+   * if neccessary. make note of this. it isn't magic.
    */
   if(ht_iter_has_next(i)) {
     HashTableNode * currentNode = i->currentNode;
@@ -696,6 +721,7 @@ bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
     copy_node_key(currentNode, keyBuffer, keyBufferLen, keyLen);
     copy_node_value(currentNode, value);
 
+    /* we've output the value, now advance to next node */
     i->currentNode = currentNode->next;
 
     /* check if we need to remove node */
@@ -709,12 +735,24 @@ bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
   return false;
 }
 
-/* gets the number of items in the hashtable */
+/**
+ * Gets the number of items in the hashtable.
+ * ht: An initialized hashtable instance.
+ * returns: the number of items currently hashed in the table.
+ */
 int ht_size(HashTable * ht) {
   return ht->numItems;
 }
 
-/* frees the specified HashTable Object */
+/**
+ * Frees the nodes and items in this hashtable, and then frees the struct's
+ * memory.
+ *
+ * Note: Although calling the free function does free the linked list nodes,
+ * it does not free the items that they point to. If this hashtable contains
+ * pointers to dynamically allocated memory, it must be freed manually.
+ * ht: the hashtable instance to free.
+ */
 void ht_free(HashTable * ht) {
   HashTableIterator i;
 
