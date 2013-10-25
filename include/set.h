@@ -38,4 +38,24 @@ typedef struct tagHashSet {
   HashTable * ht;
 }HashSet;
 
+HashSet * set_new();
+
+bool set_add(HashSet * s, void * value, size_t valueLen);
+
+bool set_remove(HashSet * s, void * value, size_t valueLen);
+
+bool set_contains(HashSet * s, void * value, size_t valueLen);
+
+inline int set_size(HashSet * s);
+
+inline void set_iter_get(HashSet * s, HashSetIterator * i);
+
+bool set_iter_has_next(HashSetIterator * i);
+
+inline bool set_iter_next(HashSetIterator * i, void * valueBuffer, size_t valueBufferLen,
+			  size_t * valueLen, bool remove);
+
+void set_free(HashSet * s);
+
+
 #endif /* SET__H__ */
