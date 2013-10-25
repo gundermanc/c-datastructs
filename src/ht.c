@@ -106,7 +106,7 @@ static void put_node(HashTable * ht, HashTableNode * node) {
  * ht: the instance of hashtable to modify.
  * newSize: the new length for the hashtable array.
  */
-static void rehash_table(HashTable * ht, size_t newSize) {
+static bool rehash_table(HashTable * ht, size_t newSize) {
   int i = 0;
   HashTableNode ** oldTable = ht->table;
   size_t oldSize = ht->tableSize;
@@ -115,6 +115,11 @@ static void rehash_table(HashTable * ht, size_t newSize) {
   ht->tableSize = newSize;
   ht->table = calloc(sizeof(HashTableNode*), newSize);
   ht->numItems = 0;
+
+  /* memory alloc error */
+  if(ht->table == NULL) {
+    return false;
+  }
 
   /* iterate the list heads */
   for(i = 0; i < oldSize; i++) {
@@ -157,8 +162,18 @@ static void check_load_factor(HashTable * ht) {
 HashTable * ht_new(int tableSize, int blockSize, float loadFactor) {
   HashTable * ht = calloc(1, sizeof(HashTable));
 
-  /* alloc array of pointers */
+  /* check for successful memory allocation of container*/
+  if(ht == NULL) {
+    return NULL;
+  }
+
+  /* alloc array of linked list pointers */
   ht->table = calloc(1, sizeof(HashTableNode*) * tableSize);
+  if(ht->table == NULL) {
+    free(ht);
+    return NULL;
+  }
+
   ht->tableSize = tableSize;
   ht->blockSize = blockSize;
   ht->loadFactor = loadFactor;
@@ -284,11 +299,14 @@ static HashTableNode * node_new(void * key, size_t keySize, DSValue * value,
 				HashTableNode * next) {
   HashTableNode * node = calloc(1, sizeof(HashTableNode));
 
-  node->key = calloc(keySize, 1);
-  memcpy(node->key, key, keySize);
-  node->keySize = keySize;
-  memcpy(&node->value, value, sizeof(DSValue));
-  node->next = next;
+  if(node != NULL) {
+    node->key = calloc(keySize, 1);
+    memcpy(node->key, key, keySize);
+    node->keySize = keySize;
+    memcpy(&node->value, value, sizeof(DSValue));
+    node->next = next;
+  }
+
   return node;
 }
 
@@ -315,7 +333,12 @@ bool ht_put_raw_key(HashTable * ht, void * key, size_t keySize,
 
   if(!oldValueExists) {
     if(newValue != NULL) {
-      put_node(ht, node_new(key, keySize, newValue, NULL));
+
+      /* if memory alloc error, fail silently */
+      HashTableNode * newNode = node_new(key, keySize, newValue, NULL);
+      if(newNode != NULL) {
+	put_node(ht, newNode);
+      }
     }
   }
 
