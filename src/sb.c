@@ -19,104 +19,176 @@
  */
 #include "sb.h"
 
-// instantiates a string buffer made of blocks of
-// size blockSize bytes
+/* Don't build this module if pointers are disabled, they are required */
+#ifdef DATASTRUCT_ENABLE_POINTER
+
+
+
+/**
+ * Creates new dynamically growing string buffer.
+ * blockSize: the number of characters to put in each segment.
+ * returns: new string buffer, or NULL if unable to allocate the memory.
+ */
 SB * sb_new(int blockSize) {
-  SB * sb = (SB*)malloc(sizeof(SB));
-  char * block = (char*)malloc(blockSize);
-  sb->list = ll_new(); // initialize linked list
-  ll_append_pointer(sb->list, block); // place initial, empty block
-  sb->blockSize = blockSize; // set size of each char array in list
-  sb->blockIndex = 0; // nothing has been added yet, so next item add at i=0
+  SB * sb;
+  char * block;
+
+  /* allocate struct */
+  sb = (SB*)calloc(1, sizeof(SB));
+  if(sb == NULL) {
+    return NULL;
+  }
+
+  /* allocate first text block */
+  block = (char*)calloc(blockSize, sizeof(char));
+  if(block == NULL) {
+    free(sb);
+    return NULL;
+  }
+
+  /* create linked list */
+  sb->list = ll_new();
+  if(sb->list == NULL) {
+    free(sb);
+    free(block);
+    return NULL;
+  }
+
+  /* append first text buffer segment */
+  ll_append_pointer(sb->list, block);
+  sb->blockSize = blockSize;
+  sb->blockIndex = 0;
   sb->size = 0;
-  return sb; // return new struct
+
+  return sb;
 }
 
-// copies string buffer to string
-// destination should be sb_size +1
+/**
+ * Frees internal linked list of text segments.
+ * sb: a stringbuffer instance.
+ */
 static void  destroy_list_items(SB * sb) {
   LLIterator iterator;
-  ll_iter_get(&iterator, sb->list); // gets iterator for list
+  ll_iter_get(&iterator, sb->list);
 
-  // iterate through all blocks
+  /* iterate through all blocks and free them */
   while(ll_iter_has_next(&iterator)) {
-    // get object payload
     char * block = (char*)ll_iter_remove(&iterator).pointerVal;
-    free(block); // free the object payload
-    //ll_iter_remove(&iterator); // remove and free object
+    free(block);
   }
 }
 
-// frees memory associated with a string buffer
+/**
+ * Frees a stringbuffer instance.
+ * sb: a string buffer instance
+ */
 void sb_free(SB * sb) {
-  destroy_list_items(sb); // destroys all items in the linked list
-  ll_free(sb->list); // free linked list
-  free(sb); // free sb structure
+  destroy_list_items(sb);
+  ll_free(sb->list);
+  free(sb);
 }
 
-// appends a char to a string buffer
-void sb_append_c(SB * sb, char c) {
+/**
+ * Appends a character to a stringbuffer.
+ * sb: a stringbuffer instance.
+ * c: a character to append to the buffer.
+ */
+void sb_append_char(SB * sb, char c) {
   char * array;
 
-  // current block is full, alloc new one
+  /* current block is full, alloc new one and add to list */
   if(sb->blockIndex == sb->blockSize) {
-    char * newBlock = (char*)malloc(sb->blockSize); // allocate new block
-    ll_append_pointer(sb->list, newBlock); // insert new block into linked list
+    char * newBlock = (char*)calloc(sb->blockSize, sizeof(char));
+    ll_append_pointer(sb->list, newBlock);
     sb->blockIndex = 0;
   }
 
-  // insert char
+  /* insert char into first empty spot
+   * for the record, ll_get_node(.., LL_TAIL) is a constant time operation
+   */
   array = (char*)ll_get_node(sb->list, LL_TAIL)->payload.pointerVal;
   array[sb->blockIndex] = c;
-  sb->blockIndex++; // increment block index
-  sb->size++; // increment size
+  sb->blockIndex++;
+  sb->size++;
 }
 
-// appends a string to the specified string buffer
-void sb_append_s(SB * sb, char * string, int length) {
-  int i;
+/**
+ * Appends a string or byte stream to the buffer.
+ * sb: an instance of string buffer
+ * string: the string to append.
+ * length: the number of characters to append.
+ */
+void sb_append_str(SB * sb, char * string, size_t length) {
+  size_t i;
 
+  /* loop and add each character */
   for(i = 0; i < length; i++) {
-    sb_append_c(sb, string[i]);
+    sb_append_char(sb, string[i]);
   }
 }
 
+/**
+ * Resets the string buffer back to its empty state.
+ * TODO: actually implement this function. At the moment it destroys the list
+ * and creates a new one.
+ * sb: the sb to reset.
+ * returns: currently returns a new stringbuffer.
+ */
 SB * sb_reset(SB * sb) {
   int blockSize = sb->blockSize;
   sb_free(sb);
   return sb_new(blockSize);
 }
 
-// gets length of characters in string buffer
+/**
+ * Returns number of characters in the stringbuffer.
+ * sb: a stringbuffer instance.
+ */
 int sb_size(SB * sb) {
   return sb->size;
 }
 
-// copies string buffer to string
-// destination should be sb_size +1
-int sb_to_string(SB * sb, char * dst, int dstLen) {
+/**
+ * Copies the stringbuffer to an external buffer.
+ * sb: stringbuffer instance.
+ * dst: the destination buffer. Must be sb_size() long, +1 if the null terminator
+ * character is to be added as well.
+ * dstLen: the length of the destination buffer.
+ * nullChar: add a null character to the end of the string?
+ * returns: number of characters copied.
+ */
+int sb_to_buffer(SB * sb, char * dst, size_t dstLen, bool nullChar) {
   LLIterator iterator;
   int i = 0;
   int blockIndex = 0;
 
-  ll_iter_get(&iterator, sb->list); // gets iterator for list
+  ll_iter_get(&iterator, sb->list);
 
-  // iterate through all blocks
+  /* iterate through all character blocks in the string buffer */
   while(ll_iter_has_next(&iterator)) {
     DSValue value;
     char * block;
 
-    ll_iter_pop(&iterator, &value); // get payload of chars
+    /* get payload of characters */
+    ll_iter_pop(&iterator, &value);
     block = (char*)value.pointerVal;
 
-    // copy each char to buffer
-    while(i < sb->size && i < (dstLen-1) && blockIndex < sb->blockSize) {
+    /* copy characters to output buffer */
+    while(i < sb->size
+	  && i < (nullChar ? (dstLen-1) : dstLen)
+	  && blockIndex < sb->blockSize) {
       dst[i] = block[blockIndex];
       blockIndex++;
       i++;
     }
-    blockIndex = 0; // reset index of current block
+    blockIndex = 0;
   }
-  dst[i] = '\0'; // replace null terminator
-  return i; // returns number of characters copied to buffer
+
+  if(nullChar) {
+    dst[i] = '\0';
+  }
+
+  return i;
 }
+
+#endif /* DATASTRUCT_ENABLE_POINTER */

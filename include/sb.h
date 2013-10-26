@@ -20,10 +20,16 @@
 #ifndef SB__H__
 #define SB__H__
 
+#include "build_config.h"
+
+
+/* Don't define these functions unless pointers are enabled, since they are required */
+#ifdef DATASTRUCT_ENABLE_POINTER
+
+
 #include <stdlib.h>
 #include <string.h>
 #include "ll.h"
-#include "build_config.h"
 
 typedef struct tagSB {
   int blockSize;
@@ -36,14 +42,15 @@ SB * sb_new(int blockSize);
 
 void sb_free(SB * sb);
 
-void sb_append_c(SB * sb, char c);
+void sb_append_char(SB * sb, char c);
 
 int sb_size(SB * sb);
 
 SB * sb_reset(SB * sb);
 
-int sb_to_string(SB * sb, char * dst, int dstLen);
+void sb_append_str(SB * sb, char * string, size_t length);
 
-void sb_append_s(SB * sb, char * string, int length);
+int sb_to_buffer(SB * sb, char * dst, size_t dstLen, bool nullChar);
 
-#endif // SB__H__
+#endif /* DATASTRUCT_ENABLE_POINTER */
+#endif /* SB__H__ */
