@@ -20,183 +20,301 @@
 
 #include "ll.h"
 
-// creates new linked list struct
+/**
+ * Creates a new linked list instance
+ * returns: new linked list instance, unless malloc error occurs.
+ * In malloc error, returns NULL.
+ */
 LL * ll_new() {
-  LL * newList = (LL*)malloc(sizeof(LL));
-  if(newList != 0) {
-    newList->size = 0;
-    newList->head = 0;
-    newList->tail = 0;
+  LL * newList = (LL*)calloc(1, sizeof(LL));
+  if(newList != NULL) {
     return newList;
   } else
-    return 0;
+    return NULL;
 }
 
-// gets size of linked list
+/**
+ * Gets the size of the list.
+ * list: an instance of linkedlist.
+ * returns: the number of items in the list.
+ */
 int ll_size(LL * list) {
   return list->size;
 }
 
-// frees linked list. List MUST be empty first
-// empty list using LLIterator and a while loop
-// and call ll_iter_remove()
+/**
+ * Frees a linked list.
+ */
 void ll_free(LL * list) {
+  LLIterator i;
+
+  /* free all nodes */
+  ll_iter_get(&i, list);
+  while(ll_iter_has_next(&i)) {
+    ll_iter_remove(&i);
+  }
+
+  /* free list container */
   free(list);
 }
 
-// appends an item to the end of the linked list
-// this a fast constant time operation
-void ll_append(LL * list, DSValue item) {
-  LLNode * newNode = (LLNode*)malloc(sizeof(LLNode));
-  newNode->nextNode = 0; // last node in series
-  newNode->payload = item;
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append(LL * list, DSValue item) {
+  LLNode * newNode = (LLNode*)calloc(1, sizeof(LLNode));
+  if(newNode != NULL) {
+    newNode->nextNode = NULL;
+    newNode->payload = item;
 
-  // if list is empty
-  if(list->tail == 0) {
-    list->head = newNode;
-    list->tail = newNode;
-  } else {
-    list->tail->nextNode = newNode;
-    list->tail = newNode;
+    if(list->tail == NULL) {
+
+      /* list is empty, create new head */
+      list->head = newNode;
+      list->tail = newNode;
+    } else {
+
+      /* list is not empty, append to tail */
+      list->tail->nextNode = newNode;
+      list->tail = newNode;
+    }
+    list->size++;
   }
-  list->size++;
+  return newNode != NULL;
 }
 
 #ifdef DATASTRUCT_ENABLE_BOOL
-// appends a bool value to the list
-void ll_append_bool(LL * list, bool value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_bool(LL * list, bool value) {
   DSValue dsValue;
   dsValue.boolVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_BOOL
+#endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
-// appends a double value to the list
-void ll_append_double(LL * list, double value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_double(LL * list, double value) {
   DSValue dsValue;
   dsValue.doubleVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_DOUBLE
+#endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
-// appends a long value to the list
-void ll_append_long(LL * list, long value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_long(LL * list, long value) {
   DSValue dsValue;
   dsValue.longVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_LONG
+#endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
-// appends a int value to the list
-void ll_append_int(LL * list, int value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_int(LL * list, int value) {
   DSValue dsValue;
   dsValue.intVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_INT
+#endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
-// appends a short value to the list
-void ll_append_short(LL * list, short value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_short(LL * list, short value) {
   DSValue dsValue;
   dsValue.shortVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_SHORT
+#endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
-// appends a char value to the list
-void ll_append_char(LL * list, char value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_char(LL * list, char value) {
   DSValue dsValue;
   dsValue.charVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_CHAR
+#endif /* DATASTRUCT_ENABLE_CHAR */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
-// appends a pointer value to the list
-void ll_append_pointer(LL * list, void * value) {
+/**
+ * Appends an item to the end of the linked list.
+ * This is a fast O(1) operation because the linked list
+ * caches the tail for fast appending.
+ * list: an instance of linkedlist.
+ * item: an item to add to the list.
+ */
+bool ll_append_pointer(LL * list, void * value) {
   DSValue dsValue;
   dsValue.pointerVal = value;
-  ll_append(list, dsValue);
+  return ll_append(list, dsValue);
 }
-#endif // DATASTRUCT_ENABLE_POINTER
+#endif /* DATASTRUCT_ENABLE_POINTER */
 
-// returns the node of the given index in the list
+/**
+ * Returns the node at specified index.
+ * list: an instance of linked list.
+ * index: the index of the node to get.
+ * returns: a pointer to the node, or NULL if node not exist.
+ */
 LLNode * ll_get_node(LL * list, int index) {
   int i = 0;
   LLNode * node;
 
+  /* if tail is requested, return cached tail pointer */
   if(index == LL_TAIL)
     return list->tail;
 
-  // iterate through entire list until index matches
+  /* iterate through entire list until index matches */
   for(node = list->head;
-      node != 0; node = (LLNode*) node->nextNode, i++) {
+      node != NULL; node = (LLNode*) node->nextNode, i++) {
     if(i == index)
       return node;
   }
-  return 0;
+
+  /* node not found */
+  return NULL;
 }
 
-// gets an iterator to iterate through the list
-void ll_iter_get(LLIterator * iteratorObject, LL * list) {
-  iteratorObject->list = list;
-  iteratorObject->previous = 0;
-  iteratorObject->head = list->head;
-  iteratorObject->cursor = iteratorObject->head;
+/**
+ * Gets an iterator for iterating through the list
+ * i: pointer to an LLIterator struct that will recv. the iterator data.
+ * list: a linked list instance.
+ */
+void ll_iter_get(LLIterator * i, LL * list) {
+  memset(i, 0, sizeof(LLIterator));
+
+  i->list = list;
+  i->current = list->head;
 }
 
-// pops current item off iterator, and switches to next one
-// returns true if success and false if not success
-bool ll_iter_pop(LLIterator * iteratorObject, DSValue * value) {
-  if(iteratorObject->cursor != 0) {
-    DSValue payload = iteratorObject->cursor->payload;
-    iteratorObject->previous = iteratorObject->cursor;
-    iteratorObject->cursor = (LLNode*)iteratorObject->cursor->nextNode;
+/**
+ * Gets next item from list iterator and moves cursor forward.
+ * i: the list iterator
+ * value: a DSValue that will recv. the value. If this value is
+ * NULL, it will not be written to.
+ */
+bool ll_iter_pop(LLIterator * i, DSValue * value) {
+  if(i->current != NULL) {
+    DSValue payload = i->current->payload;
+
+    i->previous = i->current;
+    i->current = (LLNode*)i->current->nextNode;
+
     if(value != NULL) {
       memcpy(value, &payload, sizeof(DSValue));
     }
+
     return true;
   } else {
-    return false; // no more items
+
+    /* no more items */
+    return false;
   }
 }
 
-// gets current item in iterator, without switching to next one
-bool ll_iter_peek(LLIterator * iterator, DSValue * value) {
-  if(iterator->cursor != 0) {
-    memcpy(value, &iterator->cursor->payload, sizeof(DSValue));
+/**
+ * Gets the next item from the list iterator, but does not move the
+ * cursor forward. Subsequent calls to ll_iter_peek will give the
+ * same DSValue unless ll_iter_pop, or ll_iter_remove is called in
+ * between ll_iter_peek calls.
+ * i: linked list iterator.
+ * value: a buffer that will recv. the DSValue.
+ * returns: true if item was written to value, or false if no items
+ * remain.
+ */
+bool ll_iter_peek(LLIterator * i, DSValue * value) {
+  if(i->current != NULL) {
+    memcpy(value, &i->current->payload, sizeof(DSValue));
     return true;
   }
   return false;
 }
 
-// are there items left in iterator
-bool ll_iter_has_next(LLIterator * iteratorObject) {
-  return (iteratorObject->cursor != 0);
+/**
+ * Checks to see if list iterator has uniterated items remaining.
+ * i: list iterator.
+ * returns: true if items remain, and false if not.
+ */
+inline bool ll_iter_has_next(LLIterator * i) {
+  return (i->current != NULL);
 }
 
-// removes the current item from the iterator
-// be sure to use proper peek/pop combo
-DSValue ll_iter_remove(LLIterator * iterator) {
+/**
+ * Removes the next item in the iterator from the linked list.
+ * Use in conjunction with ll_iter_peek or ll_iter_has_next to find
+ * and remove values.
+ * i: the linked list iterator.
+ */
+DSValue ll_iter_remove(LLIterator * i) {
   DSValue payload;
-  if(iterator->cursor != 0) {
-    LLNode * node = iterator->cursor;
-    payload = iterator->cursor->payload;
-    iterator->list->size--; // decrement size
-    if(iterator->list->size)
-      iterator->list->tail = 0;
-    if(iterator->cursor == iterator->list->head) {
-      iterator->list->head = (LLNode*)iterator->cursor->nextNode; // change pointer in list
-    } else {
-      iterator->previous->nextNode = iterator->cursor->nextNode;
+
+  if(ll_iter_has_next(i)) {
+    LLNode * node = i->current;
+
+    payload = i->current->payload;
+    i->list->size--;
+
+    /* Don't remember what this does....
+     * TODO: figure out what this line is
+     */
+    if(i->list->size != 0) {
+      i->list->tail = NULL;
     }
-    iterator->cursor = (LLNode*)iterator->cursor->nextNode;
-    free(node); // free memory used by node
+
+    if(i->current == i->list->head) {
+
+      /* handle if node is head */
+      i->list->head = (LLNode*)i->current->nextNode;
+    } else {
+
+      /* handle if node if not head */
+      i->previous->nextNode = i->current->nextNode;
+    }
+    i->current = (LLNode*)i->current->nextNode;
+    free(node);
   }
+
   return payload;
 }
