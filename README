@@ -63,7 +63,7 @@ well commented and reable. :)
 BUGS:
 Most of the code is fairly mature and bug free. The exception to this is the
 HashSet (set.c) which was just added. It is built on top of the hashtable,
-however, which is pretty stable.
+however, which is pretty stable. Set has no known bugs, but some may exist.
 
 MEMORY ERRORS:
 No known errors. Checked with Valgrind.
