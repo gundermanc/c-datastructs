@@ -36,5 +36,5 @@
 
 /* place any scratch code you want to test the library here: */
 int main() {
-
+  return 0;
 }

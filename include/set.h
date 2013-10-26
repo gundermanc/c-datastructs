@@ -27,7 +27,7 @@
 #include "ht.h"
 
 /* Preprocessor Definitions */
-#define SetIter HashTableIterator
+#define SetIter HTIter
 
 /* HashSet Struct */
 typedef struct Set {
@@ -35,7 +35,7 @@ typedef struct Set {
   /* This is the only thing in the struct, but using a struct gives the ability
    * to add additional functionality in the future.
    */
-  HashTable * ht;
+  HT * ht;
 }Set;
 
 Set * set_new();
