@@ -27,35 +27,35 @@
 #include "ht.h"
 
 /* Preprocessor Definitions */
-#define HashSetIterator HashTableIterator
+#define SetIter HashTableIterator
 
 /* HashSet Struct */
-typedef struct tagHashSet {
+typedef struct Set {
 
   /* This is the only thing in the struct, but using a struct gives the ability
    * to add additional functionality in the future.
    */
   HashTable * ht;
-}HashSet;
+}Set;
 
-HashSet * set_new();
+Set * set_new();
 
-bool set_add(HashSet * s, void * value, size_t valueLen);
+bool set_add(Set * s, void * value, size_t valueLen);
 
-bool set_remove(HashSet * s, void * value, size_t valueLen);
+bool set_remove(Set * s, void * value, size_t valueLen);
 
-bool set_contains(HashSet * s, void * value, size_t valueLen);
+bool set_contains(Set * s, void * value, size_t valueLen);
 
-inline int set_size(HashSet * s);
+int set_size(Set * s);
 
-inline void set_iter_get(HashSet * s, HashSetIterator * i);
+void set_iter_get(Set * s, SetIter * i);
 
-bool set_iter_has_next(HashSetIterator * i);
+bool set_iter_has_next(SetIter * i);
 
-inline bool set_iter_next(HashSetIterator * i, void * valueBuffer, size_t valueBufferLen,
+bool set_iter_next(SetIter * i, void * valueBuffer, size_t valueBufferLen,
 			  size_t * valueLen, bool remove);
 
-void set_free(HashSet * s);
+void set_free(Set * s);
 
 
 #endif /* SET__H__ */

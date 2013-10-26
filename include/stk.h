@@ -22,52 +22,51 @@
 #define stk__h__
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include "build_config.h"
 
-typedef struct tagStack {
+typedef struct Stk {
   DSValue * stack;
   int depth;
   int size;
-}Stack;
+}Stk;
 
-Stack * stk_new(int depth);
+Stk * stk_new(int depth);
 
-void stk_free(Stack * stack);
+void stk_free(Stk * stack);
 
-bool stk_push(Stack * stack, DSValue item);
+bool stk_push(Stk * stack, DSValue item);
 
 #ifdef DATASTRUCT_ENABLE_BOOL
-bool stk_push_bool(Stack * stack, bool value);
+bool stk_push_bool(Stk * stack, bool value);
 #endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
-bool stk_push_double(Stack * stack, double value);
+bool stk_push_double(Stk * stack, double value);
 #endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
-bool stk_push_long(Stack * stack, long value);
+bool stk_push_long(Stk * stack, long value);
 #endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
-bool stk_push_int(Stack * stack, int value);
+bool stk_push_int(Stk * stack, int value);
 #endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
-bool stk_push_short(Stack * stack, short value);
+bool stk_push_short(Stk * stack, short value);
 #endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
-bool stk_push_char(Stack * stack, char value);
+bool stk_push_char(Stk * stack, char value);
 #endif /* DATASTRUCT_ENABLE_char */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
-bool stk_push_pointer(Stack * stack, void * value);
+bool stk_push_pointer(Stk * stack, void * value);
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
-bool stk_peek(Stack * stack, DSValue * value);
-bool stk_pop(Stack * stack, DSValue * value);
-int stk_size(Stack * stack);
+bool stk_peek(Stk * stack, DSValue * value);
+bool stk_pop(Stk * stack, DSValue * value);
+int stk_size(Stk * stack);
 
 #endif /* stk__h__ */

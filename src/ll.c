@@ -46,7 +46,7 @@ int ll_size(LL * list) {
  * Frees a linked list.
  */
 void ll_free(LL * list) {
-  LLIterator i;
+  LLIter i;
 
   /* free all nodes */
   ll_iter_get(&i, list);
@@ -219,11 +219,11 @@ LLNode * ll_get_node(LL * list, int index) {
 
 /**
  * Gets an iterator for iterating through the list
- * i: pointer to an LLIterator struct that will recv. the iterator data.
+ * i: pointer to an LLIter struct that will recv. the iterator data.
  * list: a linked list instance.
  */
-void ll_iter_get(LLIterator * i, LL * list) {
-  memset(i, 0, sizeof(LLIterator));
+void ll_iter_get(LLIter * i, LL * list) {
+  memset(i, 0, sizeof(LLIter));
 
   i->list = list;
   i->current = list->head;
@@ -235,7 +235,7 @@ void ll_iter_get(LLIterator * i, LL * list) {
  * value: a DSValue that will recv. the value. If this value is
  * NULL, it will not be written to.
  */
-bool ll_iter_pop(LLIterator * i, DSValue * value) {
+bool ll_iter_pop(LLIter * i, DSValue * value) {
   if(i->current != NULL) {
     DSValue payload = i->current->payload;
 
@@ -264,7 +264,7 @@ bool ll_iter_pop(LLIterator * i, DSValue * value) {
  * returns: true if item was written to value, or false if no items
  * remain.
  */
-bool ll_iter_peek(LLIterator * i, DSValue * value) {
+bool ll_iter_peek(LLIter * i, DSValue * value) {
   if(i->current != NULL) {
     memcpy(value, &i->current->payload, sizeof(DSValue));
     return true;
@@ -277,7 +277,7 @@ bool ll_iter_peek(LLIterator * i, DSValue * value) {
  * i: list iterator.
  * returns: true if items remain, and false if not.
  */
-inline bool ll_iter_has_next(LLIterator * i) {
+bool ll_iter_has_next(LLIter * i) {
   return (i->current != NULL);
 }
 
@@ -287,7 +287,7 @@ inline bool ll_iter_has_next(LLIterator * i) {
  * and remove values.
  * i: the linked list iterator.
  */
-DSValue ll_iter_remove(LLIterator * i) {
+DSValue ll_iter_remove(LLIter * i) {
   DSValue payload;
 
   if(ll_iter_has_next(i)) {

@@ -68,7 +68,7 @@ SB * sb_new(int blockSize) {
  * sb: a stringbuffer instance.
  */
 static void  destroy_list_items(SB * sb) {
-  LLIterator iterator;
+  LLIter iterator;
   ll_iter_get(&iterator, sb->list);
 
   /* iterate through all blocks and free them */
@@ -158,7 +158,7 @@ int sb_size(SB * sb) {
  * returns: number of characters copied.
  */
 int sb_to_buffer(SB * sb, char * dst, size_t dstLen, bool nullChar) {
-  LLIterator iterator;
+  LLIter iterator;
   int i = 0;
   int blockIndex = 0;
 

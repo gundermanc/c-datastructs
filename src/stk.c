@@ -24,23 +24,23 @@
  * depth: how many indicies deep do you want the stack to be.
  * returns: A new stack object, or NULL if unable to allocate.
  */
-Stack * stk_new(int depth) {
+Stk * stk_new(int depth) {
 
   /* if given depth is at least 2 */
   if(depth > 1) {
 
     /* allocate stack object */
-    Stack * newList = (Stack*)malloc(sizeof(Stack));
-    if(newList != 0) {
+    Stk * newList = (Stk*)calloc(1, sizeof(Stk));
+    if(newList != NULL) {
       newList->size = 0;
       newList->depth = depth + 1;
 
       /* allocate mem for items */
-      newList->stack = (DSValue*)malloc (sizeof(DSValue) * newList->depth);
+      newList->stack = (DSValue*)calloc (newList->depth, sizeof(DSValue));
       return newList;
     }
   }
-  return 0;
+  return NULL;
 }
 
 /**
@@ -51,7 +51,7 @@ Stack * stk_new(int depth) {
  *
  * stack: an instance of stack.
  */
-void stk_free(Stack * stack) {
+void stk_free(Stk * stack) {
   free(stack->stack);
   free(stack);
 }
@@ -63,7 +63,7 @@ void stk_free(Stack * stack) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push(Stack * stack, DSValue item) {
+bool stk_push(Stk * stack, DSValue item) {
   if(stack->size < (stack->depth-1)) {
     stack->stack[stack->size] = item;
     stack->size++;
@@ -83,7 +83,7 @@ bool stk_push(Stack * stack, DSValue item) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_bool(Stack * stack, bool value) {
+bool stk_push_bool(Stk * stack, bool value) {
   DSValue item;
   item.boolVal = value;
   return stk_push(stack, item);
@@ -98,7 +98,7 @@ bool stk_push_bool(Stack * stack, bool value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_double(Stack * stack, double value) {
+bool stk_push_double(Stk * stack, double value) {
   DSValue item;
   item.doubleVal = value;
   return stk_push(stack, item);
@@ -113,7 +113,7 @@ bool stk_push_double(Stack * stack, double value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_long(Stack * stack, long value) {
+bool stk_push_long(Stk * stack, long value) {
   DSValue item;
   item.longVal = value;
   return stk_push(stack, item);
@@ -128,7 +128,7 @@ bool stk_push_long(Stack * stack, long value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_int(Stack * stack, int value) {
+bool stk_push_int(Stk * stack, int value) {
   DSValue item;
   item.intVal = value;
   return stk_push(stack, item);
@@ -143,7 +143,7 @@ bool stk_push_int(Stack * stack, int value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_short(Stack * stack, short value) {
+bool stk_push_short(Stk * stack, short value) {
   DSValue item;
   item.shortVal = value;
   return stk_push(stack, item);
@@ -158,7 +158,7 @@ bool stk_push_short(Stack * stack, short value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_char(Stack * stack, char value) {
+bool stk_push_char(Stk * stack, char value) {
   DSValue item;
   item.charVal = value;
   return stk_push(stack, item);
@@ -173,7 +173,7 @@ bool stk_push_char(Stack * stack, char value) {
  * returns true if the item was pushed succcessfully, or false if the stack
  * is full.
  */
-bool stk_push_pointer(Stack * stack, void * value) {
+bool stk_push_pointer(Stk * stack, void * value) {
   DSValue item;
   item.pointerVal = value;
   return stk_push(stack, item);
@@ -187,7 +187,7 @@ bool stk_push_pointer(Stack * stack, void * value) {
  * returns: true if an item was copied successfully, or false if no
  * item could be copied.
  */
-bool stk_peek(Stack * stack, DSValue * value) {
+bool stk_peek(Stk * stack, DSValue * value) {
   if(stack->size > 0) {
     memcpy(value, &stack->stack[stack->size-1], sizeof(DSValue));
     return true;
@@ -202,7 +202,7 @@ bool stk_peek(Stack * stack, DSValue * value) {
  * returns: true if an item was copied successfully, or false if no
  * item could be copied.
  */
-bool stk_pop(Stack * stack, DSValue * value) {
+bool stk_pop(Stk * stack, DSValue * value) {
   if(stk_peek(stack, value)) {
     stack->size--;
     return true;
@@ -215,6 +215,6 @@ bool stk_pop(Stack * stack, DSValue * value) {
  * stack: an instance of stack.
  * returns: the number of items.
  */
-int stk_size(Stack * stack) {
+int stk_size(Stk * stack) {
   return stack->size;
 }

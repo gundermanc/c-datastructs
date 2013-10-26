@@ -23,20 +23,24 @@ AR = ar
 ARFLAGS = rcs
 INCDIR = include
 OBJDIR = objs
-CFLAGS  = -g -Wall -I include
+
+# use C89 standard because MSVC doesn't support newer
+CFLAGS  = -g -std=c89 -Wall -I include
 LIBCFLAGS = $(CFLAGS) -o $(OBJDIR)/$@
 SRCDIR = src
 
 
+# builds everything!!
 all: testapp
 
+# builds the testing application
 testapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stk.o ll.o sb.o ht.o
+library: stk.o ll.o sb.o ht.o set.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stk.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
-	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o
+	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o $(OBJDIR)/set.o
 
 # build the file system
 buildfs:
@@ -57,6 +61,10 @@ sb.o: buildfs ll.o $(SRCDIR)/sb.c
 # build hashtable object
 ht.o: buildfs lookup3.o $(SRCDIR)/ht.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/ht.c
+
+# build hashset object
+set.o: ht.o $(SRCDIR)/set.c
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/set.c
 
 # build lookup3 object
 lookup3.o: buildfs $(SRCDIR)/lookup3.c

@@ -26,82 +26,80 @@
 #include "build_config.h"
 
 /* HashTable List Node */
-typedef struct tagHashTableNode {
+typedef struct HTNode {
   void * key;
   size_t keySize;
-  void * next;     /* HashTableNode* */
+  void * next;     /* HTNode* */
   DSValue value;
-}HashTableNode;
+}HTNode;
 
 /* HashTable Structure definition */
-typedef struct tagHashTable {
-  HashTableNode ** table;
+typedef struct HT {
+  HTNode ** table;
   int tableSize;
   int blockSize;
   float loadFactor;
   int numItems;
-}HashTable;
+} HT;
 
-/* HashTable Iterator structure defintion */
-typedef struct tagHashTableIterator {
-  HashTable * instance;
+/* HT Iterator structure defintion */
+typedef struct HTIter {
+  HT * instance;
   int index;
-  HashTableNode * prevNode;
-  HashTableNode * currentNode;
-}HashTableIterator;
+  HTNode * prevNode;
+  HTNode * currentNode;
+} HTIter;
 
-HashTable * ht_new(int tableSize, int blockSize, float loadFactor);
+HT * ht_new(int tableSize, int blockSize, float loadFactor);
 
 #ifdef DATASTRUCT_ENABLE_BOOL
-bool ht_put_bool(HashTable * ht, char * key, bool newValue, bool * oldValue);
+bool ht_put_bool(HT * ht, char * key, bool newValue, bool * oldValue);
 #endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
-bool ht_put_double(HashTable * ht, char * key, double newValue, double * oldValue);
+bool ht_put_double(HT * ht, char * key, double newValue, double * oldValue);
 #endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
-bool ht_put_long(HashTable * ht, char * key, long newValue, long * oldValue);
+bool ht_put_long(HT * ht, char * key, long newValue, long * oldValue);
 #endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
-bool ht_put_int(HashTable * ht, char * key, int newValue, int * oldValue);
+bool ht_put_int(HT * ht, char * key, int newValue, int * oldValue);
 #endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
-bool ht_put_short(HashTable * ht, char * key, short newValue, short * oldValue);
+bool ht_put_short(HT * ht, char * key, short newValue, short * oldValue);
 #endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
-bool ht_put_char(HashTable * ht, char * key, char newValue, char * oldValue);
+bool ht_put_char(HT * ht, char * key, char newValue, char * oldValue);
 #endif /* DATASTRUCT_ENABLE_CHAR */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
-bool ht_put_pointer(HashTable * ht, char * key, void * newValue, void ** oldValue);
+bool ht_put_pointer(HT * ht, char * key, void * newValue, void ** oldValue);
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
 
-bool ht_get(HashTable * ht, char * key, DSValue * value);
+bool ht_get(HT * ht, char * key, DSValue * value);
 
-bool ht_put(HashTable * ht, char * key, DSValue * newValue, DSValue * oldValue) ;
+bool ht_put(HT * ht, char * key, DSValue * newValue, DSValue * oldValue) ;
 
-bool ht_put_raw_key(HashTable * ht, void * key, size_t keySize,
+bool ht_put_raw_key(HT * ht, void * key, size_t keySize,
 		   DSValue * newValue, DSValue * oldValue);
 
-bool ht_get_raw_key(HashTable * ht, void * key, size_t keySize, DSValue * value);
+bool ht_get_raw_key(HT * ht, void * key, size_t keySize, DSValue * value);
 
-void ht_iter_get(HashTable * ht, HashTableIterator * i);
+void ht_iter_get(HT * ht, HTIter * i);
 
-bool ht_iter_has_next(HashTableIterator * i);
+bool ht_iter_has_next(HTIter * i);
 
-void ht_node_free(HashTableNode * node);
-
-bool ht_iter_next(HashTableIterator * i, void * keyBuffer,
+bool ht_iter_next(HTIter * i, void * keyBuffer,
 			       size_t keyBufferLen, DSValue * value,
 			       size_t * keyLen, bool remove);
 
-int ht_size(HashTable * ht);
+int ht_size(HT * ht);
 
-void ht_free(HashTable * ht);
+void ht_free(HT * ht);
 
 #endif

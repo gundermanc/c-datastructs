@@ -21,7 +21,6 @@
 #define BUILD__CONFIG__H__
 
 #include <stdlib.h>
-#include <stdbool.h>
 
 
 /* Build Configuration parameters:
@@ -39,6 +38,27 @@
 #define DATASTRUCT_ENABLE_CHAR
 #define DATASTRUCT_ENABLE_POINTER
 
+/* Boolean Definitions:
+ * Some compilers don't come with stdbool.h, so we go ahead and define our own
+ * for this project.
+ *
+ * If you wish to use another bool definition such as stdbool.h, define:
+ * DATASTRUCT_SUPRESS_BOOL_DEFINITION before including any headers from this
+ * project.
+ */
+#ifndef DATASTRUCT_SUPRESS_BOOL_DEFINITION
+#ifndef bool
+#define bool int
+#endif /* bool */
+
+#ifndef true
+#define true 1
+#endif /* true */
+
+#ifndef false
+#define false 0
+#endif /* false */
+#endif /* DATASTRUCT_SUPRESS_BOOL_DEFINITION */
 
 /* standard data union for all data structures */
 typedef union {
@@ -73,4 +93,4 @@ typedef union {
 
 }DSValue;
 
-#endif // BUILD__CONFIG__H__
+#endif /* BUILD__CONFIG__H__ */

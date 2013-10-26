@@ -1,6 +1,6 @@
 C-Datastructs Library
 (C) 2013 Christian Gunderman
- 
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published
 by the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Contact Email: gundermanc@gmail.com 
+Contact Email: gundermanc@gmail.com
 
 
 INTRODUCTION:
@@ -22,11 +22,16 @@ This package compiles to a C static library containing a few common data
 structures, including a Stack, a tail cached Linked List, a dynamically
 expanding string buffer, and a dynamically resizing HashTable.
 
+**UPDATES**:
+Hashtable is now tested to working without memory errors and I am 99% sure
+that it has sound logic. In addition, I have added the HashSet datastructure.
+
 DATASTRUCTURES:
 ht.c  : Dynamically expanding C hashtable.
 ll.c  : Tail Cached Linked list. Supports iterating and appending.
 stk.c : Array stack. Supports peek and pop.
 sb.c  : Dynamically expanding String "rope" buffer.
+set.c : HashSet, built on top of hashtable.
 
 All of these data structures can store the same common type: DSValue,
 a union defined in include/build_config.h. By commenting out preprocessor
@@ -36,18 +41,17 @@ heart's content to optimize these data structures for your particular
 application.
 
 BUILDING:
-This build requires GCC and GNU make. Run 'make' or 'make library' to 
+This build requires GCC and GNU make. Run 'make' or 'make library' to
 build the static library which is out put to the main directory and is
 named lib.a. For your convenience, a test_app.c file is included as well
 which can be used to test the structures and get your bearings. This can
 be build with 'make testapp'.
+Library is all implemented in C89 code, and should be mostly portable.
 
 DOCUMENTATION:
 I am terribly lazy, so most documentation is in the form of comments in
 the C files. Most of it is pretty self explanatory. Each C file contains
-one data structure. It is all implemented in C89 code, except for the single
-line comments, which I have yet to convert to to C comments, rather than C++
-ones.
+one data structure. See the C files for usage information.
 
 To use any of the libraries, import their headers from the include directory
 and link to the static library. You should then be able to create any of the
@@ -58,12 +62,8 @@ well commented and reable. :)
 
 BUGS:
 Most of the code is fairly mature and bug free. The exception to this is the
-hashtable, which is mostly complete, except for the ht_iter_next() method,
-which has several memory errors where pointers are freed and then accessed
-again. This is on the To Fix list for this Friday.
+HashSet (set.c) which was just added. It is built on top of the hashtable,
+however, which is pretty stable.
 
 MEMORY ERRORS:
-None, except in HashTable. Do not use hashtable until code has matured in release
-1.1. Checked with Valgrind.
-
-
+No known errors. Checked with Valgrind.

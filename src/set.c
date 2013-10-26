@@ -25,8 +25,8 @@
  * Creates a new instance of set.
  * returns: a new set, or NULL if unable to allocate memory.
  */
-HashSet * set_new() {
-  HashSet * s = calloc(sizeof(HashSet), 1);
+Set * set_new() {
+  Set * s = calloc(sizeof(Set), 1);
 
   if(s != NULL) {
     s->ht = ht_new(10, 10, 0.8f);
@@ -47,7 +47,7 @@ HashSet * set_new() {
  * valueLen: the number of bytes to copy from the buffer for value.
  * return: returns true if the value previously existed in the set.
  */
-bool set_add(HashSet * s, void * value, size_t valueLen) {
+bool set_add(Set * s, void * value, size_t valueLen) {
   DSValue newDSValue;
 
   /* makes no difference what the value is as long as the item is in the
@@ -66,7 +66,7 @@ bool set_add(HashSet * s, void * value, size_t valueLen) {
  * value.
  * returns: true if the value previously existed in the set.
  */
-bool set_remove(HashSet * s, void * value, size_t valueLen) {
+bool set_remove(Set * s, void * value, size_t valueLen) {
 
   /* newValue is NULL, telling hashtable to delete */
   return ht_put_raw_key(s->ht, value, valueLen, NULL, NULL);
@@ -80,7 +80,7 @@ bool set_remove(HashSet * s, void * value, size_t valueLen) {
  * returns: true if the set contains the value in question, and false if
  * it does not.
  */
-bool set_contains(HashSet * s, void * value, size_t valueLen) {
+bool set_contains(Set * s, void * value, size_t valueLen) {
   DSValue oldDSValue;
 
   /* we don't really care what the value is, but the hashtable deletes
@@ -94,7 +94,7 @@ bool set_contains(HashSet * s, void * value, size_t valueLen) {
  * s: an instance of set
  * returns: the number of items.
  */
-inline int set_size(HashSet * s) {
+int set_size(Set * s) {
   return ht_size(s->ht);
 }
 
@@ -109,7 +109,7 @@ inline int set_size(HashSet * s) {
  * s: an instance of set.
  * i: A buffer that will receive the set iterator.
  */
-inline void set_iter_get(HashSet * s, HashSetIterator * i) {
+void set_iter_get(Set * s, SetIter * i) {
   ht_iter_get(s->ht, i);
 }
 
@@ -119,7 +119,7 @@ inline void set_iter_get(HashSet * s, HashSetIterator * i) {
  * i: an instance of set iterator.
  * returns: true if items remain, and false if no items remain.
  */
-bool set_iter_has_next(HashSetIterator * i) {
+bool set_iter_has_next(SetIter * i) {
   return ht_iter_has_next(i);
 }
 
@@ -133,7 +133,7 @@ bool set_iter_has_next(HashSetIterator * i) {
  * bool remove: if true, the value will be removed after it is copied out.
  * returns: true if an uniterated item was found and written to the valueBuffer.
  */
-inline bool set_iter_next(HashSetIterator * i, void * valueBuffer, size_t valueBufferLen,
+bool set_iter_next(SetIter * i, void * valueBuffer, size_t valueBufferLen,
 		   size_t * valueLen, bool remove) {
   return ht_iter_next(i, valueBuffer, valueBufferLen, NULL, valueLen, remove);
 }
@@ -142,7 +142,7 @@ inline bool set_iter_next(HashSetIterator * i, void * valueBuffer, size_t valueB
  * Frees a set.
  * s: an instance of set.
  */
-void set_free(HashSet * s) {
+void set_free(Set * s) {
   ht_free(s->ht);
   free(s);
 }

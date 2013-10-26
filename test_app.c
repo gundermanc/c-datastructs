@@ -20,15 +20,21 @@
  * Contact Email: gundermanc@gmail.com
  */
 
+
+/* Uncomment the following macro if you don't want the library to
+ * define boolean itself.
+ */
+/* #define DATASTRUCT_SUPRESS_BOOL_DEFINITION */
+/* #include <stdbool */
 #include <stdlib.h>
 #include <stdio.h>
 #include "sb.h"
 #include "ll.h"
 #include "stk.h"
 #include "ht.h"
+#include "set.h"
 
 /* place any scratch code you want to test the library here: */
 int main() {
 
-  return 0;
 }
