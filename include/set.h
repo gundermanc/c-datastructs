@@ -40,7 +40,7 @@ typedef struct Set {
 
 Set * set_new();
 
-bool set_add(Set * s, void * value, size_t valueLen);
+bool set_add(Set * s, void * value, size_t valueLen, bool * prevVisited);
 
 bool set_remove(Set * s, void * value, size_t valueLen);
 

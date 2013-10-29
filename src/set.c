@@ -45,9 +45,11 @@ Set * set_new() {
  * s: an instance of set.
  * value: pointer to a buffer containing a value.
  * valueLen: the number of bytes to copy from the buffer for value.
+ * prevValue: a boolean that recv. whether or not value previously
+ * existed within the set. If this value is NULL, it is ignored.
  * return: returns true if the value previously existed in the set.
  */
-bool set_add(Set * s, void * value, size_t valueLen) {
+bool set_add(Set * s, void * value, size_t valueLen, bool * prevValue) {
   DSValue newDSValue;
 
   /* makes no difference what the value is as long as the item is in the
@@ -55,7 +57,7 @@ bool set_add(Set * s, void * value, size_t valueLen) {
    */
   newDSValue.boolVal = true;
 
-  return ht_put_raw_key(s->ht, value, valueLen, &newDSValue, NULL);
+  return ht_put_raw_key(s->ht, value, valueLen, &newDSValue, NULL, prevValue);
 }
 
 /**
@@ -68,8 +70,12 @@ bool set_add(Set * s, void * value, size_t valueLen) {
  */
 bool set_remove(Set * s, void * value, size_t valueLen) {
 
+  bool prevValue = false;
+  
   /* newValue is NULL, telling hashtable to delete */
-  return ht_put_raw_key(s->ht, value, valueLen, NULL, NULL);
+  ht_put_raw_key(s->ht, value, valueLen, NULL, NULL, &prevValue);
+
+  return prevValue;
 }
 
 /**

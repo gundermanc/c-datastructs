@@ -53,40 +53,40 @@ typedef struct HTIter {
 HT * ht_new(int tableSize, int blockSize, float loadFactor);
 
 #ifdef DATASTRUCT_ENABLE_BOOL
-bool ht_put_bool(HT * ht, char * key, bool newValue, bool * oldValue);
+bool ht_put_bool(HT * ht, char * key, bool newValue, bool * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
-bool ht_put_double(HT * ht, char * key, double newValue, double * oldValue);
+bool ht_put_double(HT * ht, char * key, double newValue, double * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
-bool ht_put_long(HT * ht, char * key, long newValue, long * oldValue);
+bool ht_put_long(HT * ht, char * key, long newValue, long * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
-bool ht_put_int(HT * ht, char * key, int newValue, int * oldValue);
+bool ht_put_int(HT * ht, char * key, int newValue, int * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
-bool ht_put_short(HT * ht, char * key, short newValue, short * oldValue);
+bool ht_put_short(HT * ht, char * key, short newValue, short * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
-bool ht_put_char(HT * ht, char * key, char newValue, char * oldValue);
+bool ht_put_char(HT * ht, char * key, char newValue, char * oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_CHAR */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
-bool ht_put_pointer(HT * ht, char * key, void * newValue, void ** oldValue);
+bool ht_put_pointer(HT * ht, char * key, void * newValue, void ** oldValue, bool * prevValue);
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
 
 bool ht_get(HT * ht, char * key, DSValue * value);
 
-bool ht_put(HT * ht, char * key, DSValue * newValue, DSValue * oldValue) ;
+bool ht_put(HT * ht, char * key, DSValue * newValue, DSValue * oldValue, bool * prevValue) ;
 
 bool ht_put_raw_key(HT * ht, void * key, size_t keySize,
-		   DSValue * newValue, DSValue * oldValue);
+		    DSValue * newValue, DSValue * oldValue, bool * prevValue);
 
 bool ht_get_raw_key(HT * ht, void * key, size_t keySize, DSValue * value);
 
