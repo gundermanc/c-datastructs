@@ -214,7 +214,7 @@ static void exchange_values(HT * ht, DSValue * newValue,
 }
 
 /**
- * Copies the key key from the current node to the provided key buffer
+ * Copies the key from the current node to the provided key buffer
  * currentNode: the node to copy the key from.
  * keyBuffer: The buffer to copy the key to.
  * keyBufferLen: the length of the key buffer, in bytes.
@@ -270,8 +270,7 @@ static bool find_value(HT * ht, int i, void * key, size_t keySize,
   while(curNode != NULL) {
 
     /* if the keys are the same... */
-    if(memcmp(key, curNode->key, curNode->keySize < keySize
-	      ? curNode->keySize:keySize) == 0) {
+    if(curNode->keySize == keySize && memcmp(key, curNode->key, keySize) == 0) {
 
       /* if oldValue buffer is provided, copy previous value to it */
       copy_node_value(curNode, oldValue);
