@@ -93,6 +93,7 @@ void sb_free(SB * sb) {
  * sb: a stringbuffer instance.
  * c: a character to append to the buffer.
  */
+/* TODO: return false if alloc fails */
 void sb_append_char(SB * sb, char c) {
   char * array;
 
@@ -118,6 +119,7 @@ void sb_append_char(SB * sb, char c) {
  * string: the string to append.
  * length: the number of characters to append.
  */
+/* return false if alloc fails */
 void sb_append_str(SB * sb, char * string, size_t length) {
   size_t i;
 

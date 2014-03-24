@@ -66,6 +66,7 @@ bool stk_push_pointer(Stk * stack, void * value);
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
 bool stk_peek(Stk * stack, DSValue * value);
+bool stk_peek_offset(Stk * stack, int offset, DSValue * value);
 bool stk_pop(Stk * stack, DSValue * value);
 int stk_size(Stk * stack);
 

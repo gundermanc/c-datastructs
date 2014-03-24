@@ -196,6 +196,22 @@ bool stk_peek(Stk * stack, DSValue * value) {
 }
 
 /**
+ * Gets the  value from the stack at the specified offset from the top
+ * without removing it.
+ * stack: an instance of stack.
+ * value: a buffer to recv. the value.
+ * returns: true if an item was copied successfully, or false if no
+ * item could be copied.
+ */
+bool stk_peek_offset(Stk * stack, int offset, DSValue * value) {
+  if(stack->size > 0 && offset >= 0 && offset < stack->size) {
+    memcpy(value, &stack->stack[stack->size-1-offset], sizeof(DSValue));
+    return true;
+  }
+  return false;
+}
+
+/**
  * Gets the top value from the stack, and removes it.
  * stack: an instance of stack.
  * value: a buffer to recv. the value.
