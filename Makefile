@@ -25,7 +25,7 @@ INCDIR = include
 OBJDIR = objs
 
 # use C89 standard because MSVC doesn't support newer
-CFLAGS  = -g -std=c89 -Wall -I include
+CFLAGS  = -fPIC -g -std=c89 -Wall -I include
 LIBCFLAGS = $(CFLAGS) -o $(OBJDIR)/$@
 SRCDIR = src
 
