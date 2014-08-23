@@ -25,13 +25,20 @@
 #include <string.h>
 #include "build_config.h"
 
+#ifdef __cplusplus
+namespace datastructs {
+namespace internal {
+#endif /* __cplusplus*/
+
 typedef struct Stk {
   DSValue * stack;
+  int blockSize;
   int depth;
   int size;
 }Stk;
 
 Stk * stk_new(int depth);
+Stk * stk_new_resizable(int depth, int blockSize);
 
 void stk_free(Stk * stack);
 
@@ -68,5 +75,10 @@ bool stk_push_pointer(Stk * stack, void * value);
 bool stk_peek(Stk * stack, DSValue * value);
 bool stk_pop(Stk * stack, DSValue * value);
 int stk_size(Stk * stack);
+
+#ifdef __cplusplus
+} /* namespace internal */
+} /* namespace datastructs*/
+#endif
 
 #endif /* stk__h__ */

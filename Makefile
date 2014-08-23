@@ -43,25 +43,36 @@ c89-debuglib: c89-releaselib
 c89-releaselib: CFLAGS += -std=c89
 c89-releaselib: library
 
-cpp-debugapp: CFLAGS += -g
+cpp-debugapp: CFLAGS += -g -std=gnu++11
 cpp-debugapp: CC = g++
 cpp-debugapp: debugapp
 
-cpp-debuglib: CFLAGS += -g
-cpp-debuglib: cpp11-releaselib
+cpp-debuglib: CFLAGS += -g -std=gnu++11
+cpp-debuglib: cpp-releaselib
 
-cpp-releaselib: CC = g++
-cpp-releaselib: library
+cpp-releaselib: CC = g++ -std=gnu++11
+cpp-releaselib: cpp-library
 ##############        #############
 
 # builds the testing application
-debugapp: library
+debugapp: c89-debugapp
+
+c89-debugapp: library
+	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
+
+# builds the testing application
+cpp-debugapp: cpp-library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library
-library: stk.o ll.o sb.o ht.o set.o
+library: stk.o ll.o sb.o ht.o set.o lookup3.o
 	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stk.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
 	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o $(OBJDIR)/set.o
+
+# build just the static cpp library
+cpp-library: stk.o ll.o sb.o ht.o set.o lookup3.o stack.o
+	$(AR) $(ARFLAGS) lib.a $(OBJDIR)/stk.o $(OBJDIR)/ll.o $(OBJDIR)/sb.o \
+	$(OBJDIR)/ht.o $(OBJDIR)/lookup3.o $(OBJDIR)/set.o $(OBJDIR)/stack.o
 
 # build the file system
 buildfs:
@@ -70,6 +81,10 @@ buildfs:
 # build stack object
 stk.o: buildfs $(SRCDIR)/stk.c
 	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/stk.c
+
+# build cpp stack object
+stack.o: buildfs $(SRCDIR)/Stack.cc
+	$(CC) $(LIBCFLAGS) -c $(SRCDIR)/Stack.cc
 
 # build linked list object
 ll.o: buildfs $(SRCDIR)/ll.c

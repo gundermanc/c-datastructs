@@ -19,6 +19,11 @@
  */
 #include "stk.h"
 
+#ifdef __cplusplus
+namespace datastructs {
+namespace internal {
+#endif /* __cplusplus*/
+
 /**
  * Allocates a new stack object.
  * depth: how many indicies deep do you want the stack to be.
@@ -33,7 +38,33 @@ Stk * stk_new(int depth) {
     Stk * newList = (Stk*)calloc(1, sizeof(Stk));
     if(newList != NULL) {
       newList->size = 0;
-      newList->depth = depth + 1;
+      newList->depth = depth;
+
+      /* allocate mem for items */
+      newList->stack = (DSValue*)calloc (newList->depth, sizeof(DSValue));
+      return newList;
+    }
+  }
+  return NULL;
+}
+
+/**
+ * Allocates a new stack object that automatically grows as you add items.
+ * depth: how many indicies deep do you want the stack to be.
+ * blockSize: number of items to add each time the stack expands.
+ * returns: A new stack object, or NULL if unable to allocate.
+ */
+Stk * stk_new_resizable(int depth, int blockSize) {
+
+  /* if given depth is at least 2 */
+  if(depth > 1) {
+
+    /* allocate stack object */
+    Stk * newList = (Stk*)calloc(1, sizeof(Stk));
+    if(newList != NULL) {
+      newList->size = 0;
+      newList->depth = depth;
+      newList->blockSize = blockSize;
 
       /* allocate mem for items */
       newList->stack = (DSValue*)calloc (newList->depth, sizeof(DSValue));
@@ -57,22 +88,49 @@ void stk_free(Stk * stack) {
 }
 
 /**
+ * Resizes the internal stack to hold newSize number of DSValue items.
+ */
+static bool resize(Stk * stack, size_t newSize) {
+  DSValue * newStack = (DSValue*)calloc(newSize, sizeof(DSValue));
+
+  /* return false on alloc failed */
+  if(newStack == NULL) {
+    return false;
+  }
+
+  /* copy items to new stack and free old stack*/
+  memcpy(newStack, stack->stack, sizeof(DSValue) * stack->size);
+  free(stack->stack);
+  stack->stack = newStack;
+  stack->size = newSize;
+
+  return true;
+}
+
+/**
  * Attempts to a add an item to the stack.
  * stack: an instance of stack.
  * item: A DSValue to place on the stack.
  * returns true if the item was pushed succcessfully, or false if the stack
- * is full.
+ * is full and not resizeable.
  */
 bool stk_push(Stk * stack, DSValue item) {
-  if(stack->size < (stack->depth-1)) {
-    stack->stack[stack->size] = item;
-    stack->size++;
-    return true;
-  } else {
 
-    /* stack is full */
-    return false;
+  /* check if stack is too small and resize if allowed */
+  if(stack->size >= (stack->depth)) {
+    
+    /* fail: stack is too small and not resizable */
+    if(stack->blockSize <= 0) {
+      return false;
+    }
+    
+    resize(stack, stack->size + stack->blockSize);
   }
+
+  /* store item */
+  stack->stack[stack->size] = item;
+  stack->size++;
+  return true;
 }
 
 #ifdef DATASTRUCT_ENABLE_BOOL
@@ -218,3 +276,8 @@ bool stk_pop(Stk * stack, DSValue * value) {
 int stk_size(Stk * stack) {
   return stack->size;
 }
+
+#ifdef __cplusplus
+} /* namespace internal */
+} /* namespace datastructs*/
+#endif
