@@ -26,7 +26,7 @@
  * returns: a new set, or NULL if unable to allocate memory.
  */
 Set * set_new() {
-  Set * s = calloc(sizeof(Set), 1);
+  Set * s = (Set*)calloc(sizeof(Set), 1);
 
   if(s != NULL) {
     s->ht = ht_new(10, 10, 0.8f);

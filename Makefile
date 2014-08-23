@@ -24,17 +24,38 @@ ARFLAGS = rcs
 INCDIR = include
 OBJDIR = objs
 
-# use C89 standard because MSVC doesn't support newer
-CFLAGS  = -g -std=c89 -Wall -I include
+CFLAGS  = -Wall -I include
 LIBCFLAGS = $(CFLAGS) -o $(OBJDIR)/$@
 SRCDIR = src
 
 
-# builds everything!!
-all: testapp
+# builds library with debug symbols + test application
+all: c89-debugapp
+
+############## builds #############
+c89-debugapp: CFLAGS += -g
+c89-debugapp: CFLAGS += -std=c89
+c89-debugapp: debugapp
+
+c89-debuglib: CFLAGS += -g
+c89-debuglib: c89-releaselib
+
+c89-releaselib: CFLAGS += -std=c89
+c89-releaselib: library
+
+cpp-debugapp: CFLAGS += -g
+cpp-debugapp: CC = g++
+cpp-debugapp: debugapp
+
+cpp-debuglib: CFLAGS += -g
+cpp-debuglib: cpp11-releaselib
+
+cpp-releaselib: CC = g++
+cpp-releaselib: library
+##############        #############
 
 # builds the testing application
-testapp: library
+debugapp: library
 	$(CC) $(CFLAGS) -o testapp test_app.c lib.a
 
 # build just the static library

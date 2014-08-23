@@ -159,7 +159,7 @@ int sb_size(SB * sb) {
  */
 int sb_to_buffer(SB * sb, char * dst, size_t dstLen, bool nullChar) {
   LLIter iterator;
-  int i = 0;
+  size_t i = 0;
   int blockIndex = 0;
 
   ll_iter_get(&iterator, sb->list);

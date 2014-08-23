@@ -113,7 +113,7 @@ static bool rehash_table(HT * ht, size_t newSize) {
 
   /* reset table */
   ht->tableSize = newSize;
-  ht->table = calloc(sizeof(HTNode*), newSize);
+  ht->table = (HTNode**)calloc(sizeof(HTNode*), newSize);
   ht->numItems = 0;
 
   /* memory alloc error */
@@ -161,7 +161,7 @@ static void check_load_factor(HT * ht) {
  * returns: pointer to a new HT struct.
  */
 HT * ht_new(int tableSize, int blockSize, float loadFactor) {
-  HT * ht = calloc(1, sizeof(HT));
+  HT * ht = (HT*)calloc(1, sizeof(HT));
 
   /* check for successful memory allocation of container*/
   if(ht == NULL) {
@@ -169,7 +169,7 @@ HT * ht_new(int tableSize, int blockSize, float loadFactor) {
   }
 
   /* alloc array of linked list pointers */
-  ht->table = calloc(1, sizeof(HTNode*) * tableSize);
+  ht->table = (HTNode**)calloc(1, sizeof(HTNode*) * tableSize);
   if(ht->table == NULL) {
     free(ht);
     return NULL;
@@ -297,7 +297,7 @@ static bool find_value(HT * ht, int i, void * key, size_t keySize,
  */
 static HTNode * node_new(void * key, size_t keySize, DSValue * value,
 				HTNode * next) {
-  HTNode * node = calloc(1, sizeof(HTNode));
+  HTNode * node = (HTNode*)calloc(1, sizeof(HTNode));
 
   if(node != NULL) {
     node->key = calloc(keySize, 1);

@@ -25,11 +25,13 @@
 #include <string.h>
 #include "build_config.h"
 
+typedef struct HTNode HTNode;
+
 /* HashTable List Node */
 typedef struct HTNode {
   void * key;
   size_t keySize;
-  void * next;     /* HTNode* */
+  HTNode * next;     /* HTNode* */
   DSValue value;
 }HTNode;
 
