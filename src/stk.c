@@ -1,6 +1,10 @@
 /**
- * Unioned Array Stack
- * (C) 2013 Christian Gunderman
+ * Unioned Array Stack OR Array List
+ * (C) 2013-2015 Christian Gunderman
+ *
+ * Doubles as both Stack AND Array List. NOTE: if you use stk_set(),
+ * stack functionality may be broken. You should use as stack OR list,
+ * not both.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,6 +58,44 @@ Stk * stk_new(int depth) {
 void stk_free(Stk * stack) {
   free(stack->stack);
   free(stack);
+}
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set(Stk * stack, DSValue value, int index) {
+  if (index < stack->depth && index >= 0) {
+    stack->stack[index] = value;
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Gets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause
+ * undefined behavior if you try and mix it with push and pop. Use as
+ * array OR stack, not both.
+ * stack: an instance of stack.
+ * value: the buffer that receives the value at the index.
+ */
+bool stk_get(Stk * stack, DSValue * value, int index) {
+  if (index < stack->depth && index >= 0) {
+    *value = stack->stack[index];
+    return true;
+  }
+
+  return false;
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
- * Unioned Array Stack
- * (C) 2013 Christian Gunderman
+ * Unioned Array Stack or Array List
+ * (C) 2013-2015 Christian Gunderman
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
