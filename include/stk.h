@@ -35,34 +35,45 @@ Stk * stk_new(int depth);
 
 void stk_free(Stk * stack);
 
+bool stk_set(Stk * stack, DSValue value, int index);
+
+bool stk_get(Stk * stack, DSValue * value, int index);
+
 bool stk_push(Stk * stack, DSValue item);
 
 #ifdef DATASTRUCT_ENABLE_BOOL
 bool stk_push_bool(Stk * stack, bool value);
+bool stk_set_bool(Stk * stack, bool value, int index);
 #endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
 bool stk_push_double(Stk * stack, double value);
+bool stk_set_double(Stk * stack, double value, int index);
 #endif /* DATASTRUCT_ENABLE_DOUBLE */
 
 #ifdef DATASTRUCT_ENABLE_LONG
 bool stk_push_long(Stk * stack, long value);
+bool stk_set_long(Stk * stack, long value, int index);
 #endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
 bool stk_push_int(Stk * stack, int value);
+bool stk_set_int(Stk * stack, int value, int index);
 #endif /* DATASTRUCT_ENABLE_INT */
 
 #ifdef DATASTRUCT_ENABLE_SHORT
 bool stk_push_short(Stk * stack, short value);
+bool stk_set_short(Stk * stack, short value, int index);
 #endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
 bool stk_push_char(Stk * stack, char value);
+bool stk_set_char(Stk * stack, char value, int index);
 #endif /* DATASTRUCT_ENABLE_char */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
 bool stk_push_pointer(Stk * stack, void * value);
+bool stk_set_pointer(Stk * stack, void * value, int index);
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
 bool stk_peek(Stk * stack, DSValue * value);

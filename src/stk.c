@@ -130,6 +130,23 @@ bool stk_push_bool(Stk * stack, bool value) {
   item.boolVal = value;
   return stk_push(stack, item);
 }
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_bool(Stk * stack, bool value, int index) {
+  DSValue item;
+  item.boolVal = value;
+  return stk_set(stack, item, index);
+}
 #endif /* DATASTRUCT_ENABLE_BOOL */
 
 #ifdef DATASTRUCT_ENABLE_DOUBLE
@@ -144,6 +161,23 @@ bool stk_push_double(Stk * stack, double value) {
   DSValue item;
   item.doubleVal = value;
   return stk_push(stack, item);
+}
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_double(Stk * stack, double value, int index) {
+  DSValue item;
+  item.doubleVal = value;
+  return stk_set(stack, item, index);
 }
 #endif /* DATASTRUCT_ENABLE_DOUBLE */
 
@@ -160,6 +194,23 @@ bool stk_push_long(Stk * stack, long value) {
   item.longVal = value;
   return stk_push(stack, item);
 }
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_long(Stk * stack, long value, int index) {
+  DSValue item;
+  item.longVal = value;
+  return stk_set(stack, item, index);
+}
 #endif /* DATASTRUCT_ENABLE_LONG */
 
 #ifdef DATASTRUCT_ENABLE_INT
@@ -174,6 +225,23 @@ bool stk_push_int(Stk * stack, int value) {
   DSValue item;
   item.intVal = value;
   return stk_push(stack, item);
+}
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_int(Stk * stack, int value, int index) {
+  DSValue item;
+  item.intVal = value;
+  return stk_set(stack, item, index);
 }
 #endif /* DATASTRUCT_ENABLE_INT */
 
@@ -190,6 +258,23 @@ bool stk_push_short(Stk * stack, short value) {
   item.shortVal = value;
   return stk_push(stack, item);
 }
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_short(Stk * stack, short value, int index) {
+  DSValue item;
+  item.shortVal = value;
+  return stk_set(stack, item, index);
+}
 #endif /* DATASTRUCT_ENABLE_SHORT */
 
 #ifdef DATASTRUCT_ENABLE_CHAR
@@ -205,7 +290,24 @@ bool stk_push_char(Stk * stack, char value) {
   item.charVal = value;
   return stk_push(stack, item);
 }
-#endif /* DATASTRUCT_ENABLE_char */
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_char(Stk * stack, char value, int index) {
+  DSValue item;
+  item.charVal = value;
+  return stk_set(stack, item, index);
+}
+#endif /* DATASTRUCT_ENABLE_CHAR */
 
 #ifdef DATASTRUCT_ENABLE_POINTER
 /**
@@ -219,6 +321,23 @@ bool stk_push_pointer(Stk * stack, void * value) {
   DSValue item;
   item.pointerVal = value;
   return stk_push(stack, item);
+}
+
+/**
+ * Sets an index in the stack (treated as an array).
+ *
+ * NOTE: This function is an _array_ function and will cause undefined
+ * behavior if you try and mix it with push and pop. Use as array OR stack,
+ * not both.
+ *
+ * stack: an instance of stack.
+ * value: the item to set in the specified index.
+ * index: the index in the _array_ to set.
+ */
+bool stk_set_pointer(Stk * stack, void * value, int index) {
+  DSValue item;
+  item.pointerVal = value;
+  return stk_set(stack, item, index);
 }
 #endif /* DATASTRUCT_ENABLE_POINTER */
 
