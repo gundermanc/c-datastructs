@@ -395,3 +395,12 @@ bool stk_pop(Stk * stack, DSValue * value) {
 int stk_size(Stk * stack) {
   return stack->size;
 }
+
+/**
+ * Gets the length of the stack/arraylist
+ * stack: an instance of stack.
+ * returns: the length.
+ */
+int stk_depth(Stk * stack) {
+  return stack->depth;
+}
